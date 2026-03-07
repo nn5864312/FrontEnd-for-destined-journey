@@ -81,11 +81,8 @@
                   <div v-if="recommendCore.author" class="card-author">
                     {{ recommendCore.author }}
                   </div>
-                  <div class="card-note">
-                    <template v-if="!recommendCore.available">不可用</template>
-                    <template v-else-if="recommendCore.specialNote">{{
-                      recommendCore.specialNote
-                    }}</template>
+                  <div v-if="recommendCore.specialNote" class="card-note">
+                    {{ recommendCore.specialNote }}
                   </div>
                 </div>
               </div>
