@@ -439,7 +439,7 @@ const DestinyTabContent: FC<WithMvuDataProps> = ({ data }) => {
 
     return (
       <div className={styles.partnerSummaryStatusRow}>
-        <StatusEffectDisplay effects={visibleEffects} mode="chips" compact emptyText="状态稳定" />
+        <StatusEffectDisplay effects={visibleEffects} mode="chips" compact emptyText="暂无 Buff" />
         {hiddenCount > 0 ? (
           <span className={styles.partnerSummaryStatusMore}>+{hiddenCount}</span>
         ) : null}
