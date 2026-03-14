@@ -20,5 +20,9 @@ export const Window: FC<WindowProps> = ({ children }) => {
     refresh();
   }, []);
 
-  return <div className={styles.statusWindow}>{children}</div>;
+  return (
+    <div id="status-window" className={styles.statusWindow}>
+      {children}
+    </div>
+  );
 };
