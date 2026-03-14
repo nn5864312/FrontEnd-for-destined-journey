@@ -376,7 +376,14 @@ const DestinyTabContent: FC<WithMvuDataProps> = ({ data }) => {
     effects: Record<string, Record<string, any>> | undefined,
     partnerName: string,
   ) => {
-    if (_.isEmpty(effects) && !editEnabled) return null;
+    if (_.isEmpty(effects) && !editEnabled) {
+      return (
+        <div className={styles.partnerSkills}>
+          <div className={styles.sectionLabel}>状态效果</div>
+          <EmptyHint className={styles.emptyHint} text="暂无 Buff" />
+        </div>
+      );
+    }
 
     return (
       <div className={styles.partnerSkills}>

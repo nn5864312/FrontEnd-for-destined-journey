@@ -234,26 +234,6 @@
   align-items: start;
 }
 
-@media (min-width: 901px) {
-  .partnerMasterDetail {
-    max-height: 100%;
-    min-height: 0;
-    align-items: stretch;
-  }
-
-  .partnerSummaryList {
-    min-height: 0;
-    overflow-y: auto;
-    padding-right: $spacing-xs;
-  }
-
-  .partnerDetailPanel {
-    min-height: 0;
-    overflow-y: auto;
-    padding-right: $spacing-xs;
-  }
-}
-
 .partnerList {
   @include list-container;
 }
