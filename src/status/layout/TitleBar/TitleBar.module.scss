@@ -84,7 +84,8 @@
 
 @media (max-width: 540px) {
   .titleBar {
-    align-items: center;
+    flex-direction: column-reverse;
+    align-items: stretch;
     padding: 10px 12px;
     gap: $spacing-sm;
   }
