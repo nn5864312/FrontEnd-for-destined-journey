@@ -118,9 +118,5 @@
       "vue-demi"
     ]
   },
-<<<<<<< HEAD
-  "version": "1.7.4"
-=======
   "version": "1.7.5"
->>>>>>> 65e0830 (feat(status): add reusable avatar management UI and unify avatar action logic)
 }
