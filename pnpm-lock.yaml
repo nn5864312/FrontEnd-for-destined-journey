@@ -190,8 +190,8 @@ importers:
         specifier: ^5.6.6
         version: 5.6.6(webpack@5.105.4)
       javascript-obfuscator:
-        specifier: ^5.3.0
-        version: 5.3.0
+        specifier: ^5.3.1
+        version: 5.3.1
       mini-css-extract-plugin:
         specifier: ^2.10.1
         version: 2.10.1(webpack@5.105.4)
@@ -284,7 +284,7 @@ importers:
         version: 6.0.1(webpack@5.105.4)
       webpack-obfuscator:
         specifier: ^3.6.0
-        version: 3.6.0(javascript-obfuscator@5.3.0)(webpack@5.105.4)
+        version: 3.6.0(javascript-obfuscator@5.3.1)(webpack@5.105.4)
       yaml-loader:
         specifier: ^0.9.0
         version: 0.9.0
@@ -2591,8 +2591,8 @@ packages:
     peerDependencies:
       react: ^19.0.0
 
-  javascript-obfuscator@5.3.0:
-    resolution: {integrity: sha512-EKKLTeKgzmY/foePpuNWhlKnrSqWMt1IHvIp0FEWzXODFqY2ZB6Mr0s2Q0uIOFCYbdYHeJNdPs6wpPb9NoUxMA==}
+  javascript-obfuscator@5.3.1:
+    resolution: {integrity: sha512-lh7LAPy3lX8CTihJX10IkmEyjb2iFyATnGZBN+1knHh216K5W0Lip4KdRoWjdv7SV343jzErpkzlpVFaefq2eQ==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6583,7 +6583,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  javascript-obfuscator@5.3.0:
+  javascript-obfuscator@5.3.1:
     dependencies:
       '@javascript-obfuscator/escodegen': 2.3.1
       '@javascript-obfuscator/estraverse': 5.4.0
@@ -8277,9 +8277,9 @@ snapshots:
       flat: 5.0.2
       wildcard: 2.0.1
 
-  webpack-obfuscator@3.6.0(javascript-obfuscator@5.3.0)(webpack@5.105.4):
+  webpack-obfuscator@3.6.0(javascript-obfuscator@5.3.1)(webpack@5.105.4):
     dependencies:
-      javascript-obfuscator: 5.3.0
+      javascript-obfuscator: 5.3.1
       multi-stage-sourcemap: 0.3.1
       multimatch: 5.0.0
       webpack: 5.105.4(webpack-cli@6.0.1)
