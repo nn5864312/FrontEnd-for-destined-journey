@@ -32,7 +32,7 @@ type ThemeStore = ThemeState & ThemeActions;
 export const useThemeStore = create<ThemeStore>()(
   immer((set, get) => ({
     // State
-    currentThemeId: 'obsidian',
+    currentThemeId: DefaultTheme.id,
     loaded: false,
 
     // Actions
@@ -88,7 +88,7 @@ export const useThemeStore = create<ThemeStore>()(
 
     reset: async () => {
       set(state => {
-        state.currentThemeId = 'obsidian';
+        state.currentThemeId = DefaultTheme.id;
       });
 
       try {
