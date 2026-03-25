@@ -12,10 +12,7 @@ export function renderMarkdown(md: string): string {
   if (!md) return '';
 
   // 先对 HTML 特殊字符做转义，防止 XSS
-  let html = md
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  let html = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   // 按行处理
   const lines = html.split('\n');
@@ -61,10 +58,7 @@ export function renderMarkdown(md: string): string {
       while (i < lines.length && isTableRow(lines[i].trim())) {
         tableLines.push(lines[i].trim());
         // 跳过分隔行
-        if (
-          i + 1 < lines.length &&
-          isTableSeparator(lines[i + 1].trim())
-        ) {
+        if (i + 1 < lines.length && isTableSeparator(lines[i + 1].trim())) {
           i++; // 跳过 | :--- | :--- | 行
         }
         i++;

@@ -143,7 +143,6 @@ export function getCoreRanking(label: string, allTabs: string[]): { tabs: string
   return { tabs: matchedTabs, note };
 }
 
-
 /**
  * 获取指定tab下的核心列表
  * 核心可以同时属于多个tab
