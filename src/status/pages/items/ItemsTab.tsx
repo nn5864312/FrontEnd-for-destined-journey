@@ -37,7 +37,7 @@ const ItemCategories = [
     id: 'equipment',
     label: '装备',
     icon: 'fa-solid fa-shield',
-    filterKey: '位置',
+    filterKey: '类型',
     pathPrefix: '主角.装备',
     itemCategory: 'equipment' as const,
   },

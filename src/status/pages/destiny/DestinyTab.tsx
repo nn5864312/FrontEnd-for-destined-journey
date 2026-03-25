@@ -48,7 +48,7 @@ type PartnerAssetSectionConfig = {
   key: Extract<PartnerDetailSection, 'equipment' | 'skills' | 'inventory'>;
   label: string;
   dataKey: '装备' | '技能' | '背包';
-  filterKey: '位置' | '类型';
+  filterKey: string;
   itemCategory: 'equipment' | 'skill' | 'item';
   emptyText: string;
   getTitleSuffix: (item: PartnerAssetItem) => ReactNode;
@@ -72,7 +72,7 @@ const PartnerAssetSections: PartnerAssetSectionConfig[] = [
     key: 'equipment',
     label: '装备',
     dataKey: '装备',
-    filterKey: '位置',
+    filterKey: '类型',
     itemCategory: 'equipment',
     emptyText: '暂无装备',
     getTitleSuffix: item =>
