@@ -45,16 +45,15 @@ import VinylPlayer from './components/VinylPlayer.vue';
 import StartPage from './components/StartPage.vue';
 
 const AGREEMENT_KEY = 'destined-journey-agreed';
-const AGREEMENT_EXPIRE_MS = 14 * 24 * 60 * 60 * 1000; // 14 天
 
 // 用户协议 Gate
 const hasAgreed = ref(false);
 
 function handleAgreed() {
   hasAgreed.value = true;
-  // 写入同意时间戳
+  // 写入同意时的版本号
   try {
-    localStorage.setItem(AGREEMENT_KEY, String(Date.now()));
+    localStorage.setItem(AGREEMENT_KEY, __APP_VERSION__);
   } catch {
     /* ignore */
   }
@@ -70,13 +69,12 @@ const envCheckResult = ref(null);
 // 提供给子组件使用
 provide('envCheckResult', readonly(envCheckResult));
 
-// 检查是否曾同意过协议且未过期（14天）
+// 检查是否曾同意过当前版本的协议
 function hasPreviouslyAgreed() {
   try {
-    const ts = localStorage.getItem(AGREEMENT_KEY);
-    if (!ts) return false;
-    const elapsed = Date.now() - Number(ts);
-    return elapsed >= 0 && elapsed < AGREEMENT_EXPIRE_MS;
+    const agreedVersion = localStorage.getItem(AGREEMENT_KEY);
+    if (!agreedVersion) return false;
+    return agreedVersion === __APP_VERSION__;
   } catch {
     return false;
   }
