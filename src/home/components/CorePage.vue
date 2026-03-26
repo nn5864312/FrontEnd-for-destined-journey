@@ -26,7 +26,9 @@
             @click="activeTab = tab"
           >
             <span class="tab-label">{{ tab }}</span>
-            <span v-if="tab !== SPECIAL_RECOMMEND_TAB" class="tab-count">({{ getCoresForTab(tab).length }})</span>
+            <span v-if="tab !== SPECIAL_RECOMMEND_TAB" class="tab-count"
+              >({{ getCoresForTab(tab).length }})</span
+            >
           </button>
         </div>
         <button

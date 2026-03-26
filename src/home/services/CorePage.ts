@@ -314,7 +314,9 @@ export function getSelectedCore(localCoreSelections: Map<string, boolean>): stri
  * 加载核心列表
  * @param specialRecommendCores 特别推荐核心列表（从外部传入）
  */
-export async function loadCoreOptions(specialRecommendCores: Record<string, SpecialRecommendConfig> = {}): Promise<{
+export async function loadCoreOptions(
+  specialRecommendCores: Record<string, SpecialRecommendConfig> = {},
+): Promise<{
   coreOptions: CoreOption[];
   localCoreSelections: Map<string, boolean>;
   tabs: string[];
@@ -331,7 +333,10 @@ export async function loadCoreOptions(specialRecommendCores: Record<string, Spec
   const existingCoreValues = new Set(entries.map((entry: { name: string }) => entry.name));
 
   // 生成特别推荐核心列表（包含可用性信息，最多4个）
-  const specialRecommendCoreList = generateSpecialRecommendCores(specialRecommendCores, existingCoreValues);
+  const specialRecommendCoreList = generateSpecialRecommendCores(
+    specialRecommendCores,
+    existingCoreValues,
+  );
 
   // 创建可用的特别推荐核心值集合（用于后续判断）
   const availableSpecialCores = new Set(
