@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>核心 Note 样式验证</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <!-- marked.js for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    /* ===== CSS Variables (from global.css) ===== */
+    :root {
+      --bg-color: #f5efe6;
+      --text-color: #4a3b31;
+      --border-color: #d3c5b3;
+      --border-strong-color: #785a4e;
+      --title-color: #5d4037;
+      --link-color: #8c6d62;
+      --item-bg-color: rgba(253, 250, 245, 0.9);
+      --item-bg-hover-color: #e8ddcb;
+      --item-bg-selected-color: #d7c8b6;
+      --pre-bg-color: rgba(215, 200, 182, 0.3);
+      --container-bg-color: rgba(240, 230, 210, 0.9);
+      --title-font: 'Cinzel', serif;
+      --body-font: 'Noto Serif SC', serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--body-font);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    /* ===== Page Container ===== */
+    .settings-page {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .main-title {
+      font-family: var(--title-font);
+      font-weight: 700;
+      color: var(--title-color);
+      text-align: center;
+      margin: 0 0 10px 0;
+      font-size: 2.2em;
+    }
+
+    .sub-title {
+      text-align: center;
+      font-size: 0.9em;
+      color: var(--text-color);
+      opacity: 0.7;
+      margin-bottom: 20px;
+    }
+
+    /* ===== Control Panel (from DLCManagementPage) ===== */
+    .control-panel-container {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background-color: rgba(253, 250, 245, 0.9);
+      padding: 0;
+      margin: 25px 0;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+
+    /* Search */
+    .search-container {
+      padding: 10px 20px;
+      background-color: var(--item-bg-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .dlc-search {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-family: var(--body-font);
+      font-size: 0.95em;
+      background-color: var(--item-bg-color);
+      color: var(--text-color);
+      outline: none;
+      transition: border-color 0.2s ease-in-out;
+    }
+
+    .dlc-search:focus {
+      border-color: var(--title-color);
+    }
+
+    .dlc-search::placeholder {
+      color: #999;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      padding: 15px 20px;
+    }
+
+    .control-group {
+      min-height: 200px;
+    }
+
+    /* ===== List-Detail Layout ===== */
+    .list-detail-layout {
+      display: flex;
+      gap: 20px;
+      height: 550px;
+    }
+
+    .item-list {
+      flex: 0 0 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+      max-height: 550px;
+      overflow-y: auto;
+      padding-right: 10px;
+      border-right: 1px solid var(--border-color);
+      scrollbar-width: none;
+    }
+
+    .item-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .item-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .item-list::-webkit-scrollbar-thumb {
+      background-color: transparent;
+      border-radius: 3px;
+      transition: background-color 0.2s ease;
+    }
+
+    .item-list:hover {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+    }
+
+    .item-list:hover::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .item-list:hover::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .list-item {
+      font-family: var(--body-font);
+      font-size: 0.95em;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      background-color: var(--item-bg-color);
+      color: var(--text-color);
+      text-align: left;
+      width: 100%;
+    }
+
+    .list-item:hover {
+      background-color: var(--item-bg-hover-color);
+      border-color: var(--border-strong-color);
+    }
+
+    .list-item.selected {
+      background-color: var(--item-bg-selected-color);
+      border-color: var(--title-color);
+      color: var(--title-color);
+      font-weight: 500;
+    }
+
+    .list-item .note-badge {
+      display: inline-block;
+      font-size: 0.7em;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .note-badge.has-md {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .note-badge.plain {
+      background-color: #e2e3e5;
+      color: #383d41;
+    }
+
+    .note-badge.empty {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    /* ===== Detail Panel ===== */
+    .item-detail {
+      flex: 1;
+      padding: 10px 20px;
+      height: 100%;
+      max-height: 550px;
+      overflow-y: auto;
+    }
+
+    .detail-name {
+      font-family: var(--title-font);
+      font-size: 1.4em;
+      font-weight: 600;
+      color: var(--title-color);
+      margin: 0 0 15px 0;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .detail-section-title {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: var(--text-color);
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 15px 0 8px 0;
+    }
+
+    /* --- Raw Text View --- */
+    .raw-note {
+      background-color: var(--pre-bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 12px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85em;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: var(--text-color);
+      max-height: 150px;
+      overflow-y: auto;
+      line-height: 1.5;
+    }
+
+    /* --- Rendered Markdown View --- */
+    .rendered-note {
+      background-color: rgba(253, 250, 245, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 16px 20px;
+      line-height: 1.7;
+      color: var(--text-color);
+    }
+
+    .rendered-note h1,
+    .rendered-note h2,
+    .rendered-note h3,
+    .rendered-note h4 {
+      font-family: var(--body-font);
+      color: var(--title-color);
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .rendered-note h1 {
+      font-size: 1.4em;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .rendered-note h2 {
+      font-size: 1.2em;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 4px;
+    }
+
+    .rendered-note h3 {
+      font-size: 1.05em;
+    }
+
+    .rendered-note h1:first-child,
+    .rendered-note h2:first-child,
+    .rendered-note h3:first-child {
+      margin-top: 0;
+    }
+
+    .rendered-note p {
+      margin: 8px 0;
+    }
+
+    .rendered-note strong {
+      color: var(--title-color);
+    }
+
+    .rendered-note hr {
+      border: none;
+      border-top: 1px dashed var(--border-color);
+      margin: 14px 0;
+    }
+
+    .rendered-note ul,
+    .rendered-note ol {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+
+    .rendered-note li {
+      margin-bottom: 4px;
+    }
+
+    /* Table styles */
+    .rendered-note table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.92em;
+    }
+
+    .rendered-note thead th {
+      background-color: var(--item-bg-hover-color);
+      color: var(--title-color);
+      font-weight: 600;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .rendered-note tbody td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+
+    .rendered-note tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rendered-note tbody tr:hover {
+      background-color: rgba(232, 221, 203, 0.3);
+    }
+
+    /* Code in note */
+    .rendered-note code {
+      background-color: var(--pre-bg-color);
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9em;
+    }
+
+    .rendered-note blockquote {
+      border-left: 3px solid var(--border-strong-color);
+      margin: 10px 0;
+      padding: 8px 14px;
+      background-color: rgba(215, 200, 182, 0.15);
+      color: var(--text-color);
+      opacity: 0.9;
+    }
+
+    /* ===== Detail Placeholder ===== */
+    .detail-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-height: 150px;
+      color: var(--text-color);
+      opacity: 0.6;
+      font-size: 0.95em;
+    }
+
+    /* ===== View Toggle ===== */
+    .view-toggle {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .view-toggle button {
+      font-family: var(--body-font);
+      font-size: 0.82em;
+      padding: 4px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: var(--item-bg-color);
+      color: var(--text-color);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .view-toggle button:hover {
+      background-color: var(--item-bg-hover-color);
+    }
+
+    .view-toggle button.active {
+      background-color: var(--item-bg-selected-color);
+      border-color: var(--title-color);
+      color: var(--title-color);
+      font-weight: 500;
+    }
+
+    /* ===== Stats Bar ===== */
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      padding: 10px 20px;
+      font-size: 0.85em;
+      color: var(--text-color);
+      opacity: 0.8;
+      border-top: 1px solid var(--border-color);
+      background-color: var(--item-bg-color);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .stat-dot.md   { background-color: #28a745; }
+    .stat-dot.plain { background-color: #6c757d; }
+    .stat-dot.empty { background-color: #dc3545; }
+
+    /* ===== Loading ===== */
+    .loading-text,
+    .empty-text {
+      font-size: 0.95em;
+      color: #6a514d;
+      text-align: center;
+      padding: 20px;
+      opacity: 0.8;
+    }
+
+    /* ===== Upload Zone ===== */
+    .upload-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 30px;
+      cursor: pointer;
+      transition: all 0.25s ease-in-out;
+      background-color: rgba(253, 250, 245, 0.5);
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      border-color: var(--title-color);
+      background-color: var(--item-bg-hover-color);
+    }
+
+    .upload-zone .upload-icon {
+      font-size: 2.8em;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    .upload-zone .upload-text {
+      font-size: 1em;
+      color: var(--text-color);
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .upload-zone .upload-hint {
+      font-size: 0.82em;
+      color: var(--text-color);
+      opacity: 0.5;
+    }
+
+    .upload-zone input[type="file"] {
+      display: none;
+    }
+
+    .upload-error {
+      color: #721c24;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 4px;
+      padding: 8px 14px;
+      margin-top: 12px;
+      font-size: 0.88em;
+      max-width: 100%;
+      word-break: break-all;
+    }
+
+    .loaded-file-name {
+      font-size: 0.82em;
+      color: var(--text-color);
+      opacity: 0.6;
+      text-align: right;
+      padding: 4px 8px;
+    }
+
+    /* ===== Responsive ===== */
+    @media screen and (max-width: 600px) {
+      .main-title {
+        font-size: 1.8em;
+      }
+
+      .list-detail-layout {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .item-list {
+        flex: none;
+        height: auto;
+        max-height: 150px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding-right: 0;
+        padding-bottom: 10px;
+      }
+
+      .item-detail {
+        height: auto;
+        max-height: none;
+        padding: 10px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="settings-page">
+    <h1 class="main-title">Note 样式验证</h1>
+    <p class="sub-title">验证 coreClassification.json 中每个核心的 note 字段 Markdown 渲染效果</p>
+
+    <div class="control-panel-container">
+      <!-- Upload Zone (initial state) -->
+      <div id="uploadSection" class="tab-content">
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">📂</div>
+          <div class="upload-text">点击或拖拽上传 coreClassification.json</div>
+          <div class="upload-hint">支持 JSON / JSONC 格式</div>
+          <input type="file" id="fileInput" accept=".json" />
+          <div id="uploadError"></div>
+        </div>
+      </div>
+
+      <!-- Main content (shown after upload) -->
+      <div id="mainSection" style="display: none;">
+        <!-- Loaded file info -->
+        <div id="loadedFileName" class="loaded-file-name"></div>
+        <!-- Search -->
+        <div class="search-container">
+          <input id="searchInput" type="text" class="dlc-search" placeholder="🔍 搜索核心名称..." />
+        </div>
+
+        <!-- Content -->
+        <div class="tab-content">
+          <div class="control-group">
+            <div id="mainLayout" class="list-detail-layout">
+              <div id="itemList" class="item-list"></div>
+              <div id="itemDetail" class="item-detail">
+                <div class="detail-placeholder">请选择一个核心查看 Note 样式</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div id="statsBar" class="stats-bar" style="display: none;">
+        <div class="stat-item">
+          <span class="stat-dot md"></span>
+          <span id="statMd">0</span> Markdown
+        </div>
+        <div class="stat-item">
+          <span class="stat-dot plain"></span>
+          <span id="statPlain">0</span> 纯文本
+        </div>
+        <div class="stat-item">
+          <span class="stat-dot empty"></span>
+          <span id="statEmpty">0</span> 空
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== State =====
+    let allCores = [];           // { name, note, type }
+    let selectedCore = null;
+    let currentView = 'rendered'; // 'rendered' | 'raw' | 'both'
+
+    // ===== Helpers =====
+    function classifyNote(note) {
+      if (!note || note.trim() === '') return 'empty';
+      // If note contains markdown indicators like #, |, **, ---, etc.
+      if (/^#{1,6}\s|^\|.*\||\*\*.*\*\*|^---/m.test(note)) return 'md';
+      return 'plain';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ===== Upload Handling =====
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadError = document.getElementById('uploadError');
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('drag-over');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('drag-over');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+      uploadError.innerHTML = '';
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const text = e.target.result;
+          // Parse JSONC (strip // comments)
+          const cleaned = text.replace(/^\s*\/\/.*$/gm, '');
+          const data = JSON.parse(cleaned);
+
+          const allSection = data['ALL'] || {};
+          allCores = Object.entries(allSection).map(([name, obj]) => ({
+            name,
+            note: obj.note || '',
+            type: classifyNote(obj.note),
+          }));
+
+          selectedCore = null;
+          renderList(allCores);
+          updateStats();
+
+          // Switch from upload view to main view
+          document.getElementById('uploadSection').style.display = 'none';
+          document.getElementById('mainSection').style.display = 'block';
+          document.getElementById('statsBar').style.display = 'flex';
+          document.getElementById('loadedFileName').textContent = '已加载: ' + file.name;
+          // Reset detail
+          document.getElementById('itemDetail').innerHTML =
+            '<div class="detail-placeholder">请选择一个核心查看 Note 样式</div>';
+        } catch (err) {
+          uploadError.innerHTML = '<div class="upload-error">解析失败: ' + escapeHtml(err.message) + '</div>';
+          console.error(err);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ===== Render List =====
+    function renderList(cores) {
+      const list = document.getElementById('itemList');
+      list.innerHTML = '';
+
+      cores.forEach(core => {
+        const btn = document.createElement('button');
+        btn.className = 'list-item';
+        if (selectedCore && selectedCore.name === core.name) {
+          btn.classList.add('selected');
+        }
+
+        const badgeClass = core.type === 'md' ? 'has-md' : core.type === 'plain' ? 'plain' : 'empty';
+        const badgeText = core.type === 'md' ? 'MD' : core.type === 'plain' ? '文本' : '空';
+        btn.innerHTML = `${escapeHtml(core.name)}<span class="note-badge ${badgeClass}">${badgeText}</span>`;
+
+        btn.addEventListener('click', () => {
+          selectedCore = core;
+          // Update selection highlight
+          list.querySelectorAll('.list-item').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          renderDetail(core);
+        });
+
+        list.appendChild(btn);
+      });
+    }
+
+    // ===== Render Detail =====
+    function renderDetail(core) {
+      const detail = document.getElementById('itemDetail');
+
+      let html = `<h3 class="detail-name">${escapeHtml(core.name)}</h3>`;
+
+      // View toggle
+      html += `
+        <div class="view-toggle">
+          <button class="${currentView === 'rendered' ? 'active' : ''}" onclick="switchView('rendered')">渲染视图</button>
+          <button class="${currentView === 'raw' ? 'active' : ''}" onclick="switchView('raw')">原始文本</button>
+          <button class="${currentView === 'both' ? 'active' : ''}" onclick="switchView('both')">对比视图</button>
+        </div>
+      `;
+
+      if (!core.note || core.note.trim() === '') {
+        html += `<div class="detail-placeholder" style="min-height:80px;">此核心的 note 为空</div>`;
+      } else {
+        if (currentView === 'rendered' || currentView === 'both') {
+          html += `<div class="detail-section-title">▼ Markdown 渲染结果</div>`;
+          html += `<div class="rendered-note">${marked.parse(core.note)}</div>`;
+        }
+
+        if (currentView === 'raw' || currentView === 'both') {
+          html += `<div class="detail-section-title">▼ 原始 JSON 文本</div>`;
+          html += `<div class="raw-note">${escapeHtml(core.note)}</div>`;
+        }
+      }
+
+      detail.innerHTML = html;
+    }
+
+    function switchView(view) {
+      currentView = view;
+      if (selectedCore) renderDetail(selectedCore);
+    }
+
+    // ===== Stats =====
+    function updateStats() {
+      const md = allCores.filter(c => c.type === 'md').length;
+      const plain = allCores.filter(c => c.type === 'plain').length;
+      const empty = allCores.filter(c => c.type === 'empty').length;
+      document.getElementById('statMd').textContent = md;
+      document.getElementById('statPlain').textContent = plain;
+      document.getElementById('statEmpty').textContent = empty;
+    }
+
+    // ===== Search =====
+    document.getElementById('searchInput').addEventListener('input', function () {
+      const term = this.value.toLowerCase();
+      if (!term) {
+        renderList(allCores);
+        return;
+      }
+      const filtered = allCores.filter(c => c.name.toLowerCase().includes(term));
+      renderList(filtered);
+    });
+  </script>
+</body>
+</html>
