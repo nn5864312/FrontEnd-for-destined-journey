@@ -142,7 +142,7 @@
       </button>
       <button
         class="nav-button"
-        :disabled="!selectedCore || isLoading || isSaving"
+        :disabled="enabledCoreCount !== 1 || isLoading || isSaving"
         @click="handleNext"
       >
         <span>{{ isSaving ? '保存中...' : '下一步' }}</span>
@@ -189,6 +189,15 @@ const maxVisibleTabs = 4;
 const tabStartIndex = ref(0);
 
 const selectedCore = computed(() => getSelectedCore(localCoreSelections.value));
+
+// 计算当前已启用的核心数量
+const enabledCoreCount = computed(() => {
+  let count = 0;
+  for (const enabled of localCoreSelections.value.values()) {
+    if (enabled) count++;
+  }
+  return count;
+});
 
 // 当前是否在特别推荐tab
 const isSpecialRecommendTab = computed(() => activeTab.value === SPECIAL_RECOMMEND_TAB);
