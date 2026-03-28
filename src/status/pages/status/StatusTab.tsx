@@ -327,7 +327,6 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
                 src={playerAvatarDisplayUrl}
                 alt="主角头像"
                 size="lg"
-                placeholderText="主"
                 showEditHint
                 className={styles.overviewAvatarInline}
                 onClick={() => setIsPlayerAvatarModalOpen(true)}

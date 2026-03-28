@@ -484,7 +484,6 @@ const DestinyTabContent: FC<WithMvuDataProps> = ({ data }) => {
           src={getPartnerAvatarUrl(partnerName)}
           alt={`${partnerName}头像`}
           size="md"
-          placeholderText={partnerName}
           showEditHint
           className={styles.partnerAvatar}
           onClick={() => openPartnerAvatarModal(partnerName)}
@@ -682,7 +681,6 @@ const DestinyTabContent: FC<WithMvuDataProps> = ({ data }) => {
           src={getPartnerAvatarUrl(partnerName)}
           alt={`${partnerName}头像`}
           size="md"
-          placeholderText={partnerName}
           showEditHint
           className={styles.partnerAvatar}
           onClick={() => openPartnerAvatarModal(partnerName)}

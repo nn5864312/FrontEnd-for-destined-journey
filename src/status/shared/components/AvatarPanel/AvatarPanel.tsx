@@ -16,39 +16,16 @@ export interface AvatarPanelProps {
   onClick?: () => void;
   /** 是否展示编辑提示按钮 */
   showEditHint?: boolean;
-  /** 无头像时的占位文本 */
-  placeholderText?: string;
   /** 自定义类名 */
   className?: string;
 }
+
+const DefaultAvatarSrc = `https://testingcf.jsdelivr.net/gh/The-poem-of-destiny/FrontEnd-for-destined-journey@${__APP_VERSION__}/public/images/avatar.png`;
 
 const SizeClassMap: Record<AvatarPanelSize, string> = {
   sm: styles.sizeSm,
   md: styles.sizeMd,
   lg: styles.sizeLg,
-};
-
-const PlaceholderToneClassNames = [
-  styles.placeholderToneA,
-  styles.placeholderToneB,
-  styles.placeholderToneC,
-  styles.placeholderToneD,
-  styles.placeholderToneE,
-  styles.placeholderToneF,
-];
-
-const getAvatarPlaceholder = (placeholder_text: string, alt: string) => {
-  const normalizedText = _.trim(placeholder_text || alt || '？');
-  return normalizedText.charAt(0).toUpperCase() || '？';
-};
-
-const getPlaceholderToneClassName = (placeholder_text: string) => {
-  const normalizedText = _.trim(placeholder_text || '？');
-  const hashValue = Array.from(normalizedText).reduce(
-    (total, char) => total + char.charCodeAt(0),
-    0,
-  );
-  return PlaceholderToneClassNames[hashValue % PlaceholderToneClassNames.length];
 };
 
 /**
@@ -61,11 +38,9 @@ export const AvatarPanel: FC<AvatarPanelProps> = ({
   onImageError,
   onClick,
   showEditHint = false,
-  placeholderText = '',
   className = '',
 }) => {
-  const placeholder = getAvatarPlaceholder(placeholderText, alt);
-  const placeholderToneClassName = getPlaceholderToneClassName(placeholderText || alt);
+  const displaySrc = src || DefaultAvatarSrc;
 
   return (
     <div className={`${styles.avatarPanel} ${SizeClassMap[size]} ${className}`.trim()}>
@@ -76,14 +51,8 @@ export const AvatarPanel: FC<AvatarPanelProps> = ({
         aria-label={alt}
         title={alt}
       >
-        <div
-          className={`${styles.imageShell} ${src ? styles.imageShellFilled : `${styles.imageShellEmpty} ${placeholderToneClassName}`}`}
-        >
-          {src ? (
-            <img className={styles.image} src={src} alt={alt} onError={onImageError} />
-          ) : (
-            <span className={styles.placeholderText}>{placeholder}</span>
-          )}
+        <div className={styles.imageShell}>
+          <img className={styles.image} src={displaySrc} alt={alt} onError={onImageError} />
         </div>
       </button>
 
