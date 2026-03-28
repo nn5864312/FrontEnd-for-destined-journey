@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, MouseEventHandler } from 'react';
 import styles from './AvatarPanel.module.scss';
 
 export type AvatarPanelSize = 'sm' | 'md' | 'lg';
@@ -13,9 +13,7 @@ export interface AvatarPanelProps {
   /** 图片加载失败 */
   onImageError?: () => void;
   /** 点击头像 */
-  onClick?: () => void;
-  /** 是否展示编辑提示按钮 */
-  showEditHint?: boolean;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   /** 自定义类名 */
   className?: string;
 }
@@ -37,7 +35,6 @@ export const AvatarPanel: FC<AvatarPanelProps> = ({
   size = 'md',
   onImageError,
   onClick,
-  showEditHint = false,
   className = '',
 }) => {
   const displaySrc = src || DefaultAvatarSrc;
@@ -55,12 +52,6 @@ export const AvatarPanel: FC<AvatarPanelProps> = ({
           <img className={styles.image} src={displaySrc} alt={alt} onError={onImageError} />
         </div>
       </button>
-
-      {showEditHint ? (
-        <span className={styles.editHintButton} aria-hidden="true">
-          <i className="fa-solid fa-pen" />
-        </span>
-      ) : null}
     </div>
   );
 };
