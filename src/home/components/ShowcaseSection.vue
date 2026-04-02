@@ -85,6 +85,7 @@ const teamMembers = [
   '@AkabaneSaki',
   '@Aoo',
   '@青砚',
+  '@Elfa',
 ];
 
 const hallOfFame = ['@Kitaikuyo', '@秋天的咸鱼'];
