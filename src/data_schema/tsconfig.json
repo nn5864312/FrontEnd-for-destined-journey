@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "."
+  },
+  "include": ["./**/*", "../../@types/**/*", "../../global.d.ts", "../../auto-imports.zod.d.ts"]
+}

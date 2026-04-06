@@ -1,0 +1,1196 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+.destinyTab {
+  @include page-container;
+  position: relative;
+  flex: 1;
+  min-height: 100%;
+}
+
+.destinyTabDetailModeMobile {
+  @media (max-width: 900px) {
+    flex: 1;
+    min-height: 100%;
+    height: 100%;
+
+    > .fpShopBtn,
+    > .destinyTabPoints,
+    > .destinyTabPartners {
+      display: none;
+    }
+  }
+}
+
+// FP商店按钮
+.fpShopBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-card-border);
+  border-radius: $border-radius-sm;
+  color: var(--theme-text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  cursor: not-allowed;
+  transition: all $transition-fast;
+
+  &:disabled {
+    opacity: 0.6;
+  }
+
+  i {
+    font-size: 14px;
+    color: var(--theme-tab-indicator);
+  }
+}
+
+// 待上线徽章
+.comingSoonBadge {
+  margin-left: $spacing-xs;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  background: color-mix(in srgb, var(--theme-warning) 18%, transparent);
+  color: var(--theme-warning);
+  border: 1px solid color-mix(in srgb, var(--theme-warning) 36%, transparent);
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.partnerTitle {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+
+  > .deletePartnerBtn {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.partnerTitleMain {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: $spacing-md;
+  flex-wrap: nowrap;
+  padding-right: 36px;
+}
+
+.partnerAvatar {
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+.partnerIdentityHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  min-width: 0;
+}
+
+.partnerIdentityTitleRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.partnerAvatarInlineButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px dashed color-mix(in srgb, var(--theme-card-border) 78%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-card-bg) 72%, transparent);
+  color: var(--theme-text-secondary);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    color $transition-fast;
+
+  &:hover {
+    background: color-mix(in srgb, var(--theme-card-bg) 84%, transparent);
+    border-color: color-mix(in srgb, var(--theme-card-border) 92%, transparent);
+    color: var(--theme-text-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: color-mix(in srgb, var(--theme-card-border) 100%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--theme-tab-indicator) 18%, transparent);
+  }
+
+  i {
+    font-size: 10px;
+  }
+}
+
+.partnerTitleContent {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.partnerMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.affectionBadge {
+  @include badge-dark;
+  font-size: 11px;
+}
+
+@media (max-width: 540px) {
+  .partnerTitleMain {
+    width: 100%;
+    align-items: flex-start;
+    gap: $spacing-sm;
+    padding-right: 32px;
+  }
+
+  .partnerMeta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .partnerCategoryBtn {
+    min-height: 34px;
+    padding: 7px 12px;
+    font-size: 11px;
+  }
+}
+
+.destinyTabLoading,
+.destinyTabError,
+.destinyTabEmpty {
+  @include state-container;
+}
+
+// 命运点数卡片
+.destinyTabPoints {
+}
+
+.destinyTabPartners {
+  @include list-container($spacing-md);
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.partnerSectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+}
+
+.partnerSectionContent {
+  @include list-container($spacing-md);
+  padding-top: 1px;
+}
+
+.partnerCategoryBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+  padding-top: 1px;
+}
+
+.partnerCategoryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-card-bg) 68%, transparent);
+  color: var(--theme-text-secondary);
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    color $transition-fast,
+    transform $transition-fast;
+
+  &:hover {
+    background: color-mix(in srgb, var(--theme-card-bg) 82%, transparent);
+    border-color: color-mix(in srgb, var(--theme-card-border) 88%, transparent);
+    color: var(--theme-text-primary);
+    transform: translateY(-1px);
+  }
+}
+
+.partnerCategoryBtnActive {
+  background: color-mix(in srgb, var(--theme-card-bg) 86%, var(--theme-text-primary) 4%);
+  border-color: color-mix(in srgb, var(--theme-card-border) 92%, transparent);
+  color: var(--theme-text-primary);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--theme-text-primary) 10%, transparent);
+}
+
+.partnerCategoryCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-window-bg) 34%, transparent);
+  color: var(--theme-text-muted);
+  font-size: 10px;
+}
+
+.destinyTabAscension {
+  // 登神长阶卡片
+}
+
+// 命运点数
+.destinyPoints {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+}
+
+.destinyPointsIcon {
+  color: var(--theme-tab-indicator);
+  font-size: 18px;
+}
+
+.destinyPointsLabel {
+  font-size: 12px;
+  color: var(--theme-text-secondary);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.destinyPointsValue {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+}
+
+// 命定之人列表
+.partnerMasterDetail {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: $spacing-md;
+  align-items: start;
+}
+
+.partnerList {
+  @include list-container;
+}
+
+.partnerSummaryList {
+  @include list-container($spacing-sm);
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.partnerSummaryListHiddenMobile {
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.partnerSummaryCard {
+  padding: $spacing-sm;
+  border-radius: $border-radius-sm;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
+  background: color-mix(in srgb, var(--theme-card-bg) 86%, transparent);
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    box-shadow $transition-fast,
+    transform $transition-fast;
+
+  &:hover {
+    background: color-mix(in srgb, var(--theme-card-bg) 82%, transparent);
+    border-color: color-mix(in srgb, var(--theme-card-border) 88%, transparent);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--theme-window-border) 12%, transparent);
+    transform: translateY(-1px);
+  }
+}
+
+.partnerSummaryCardActive {
+  background: color-mix(in srgb, var(--theme-card-bg) 80%, transparent);
+  border-color: color-mix(in srgb, var(--theme-card-border) 92%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--theme-text-primary) 8%, transparent),
+    0 10px 24px color-mix(in srgb, var(--theme-window-bg) 16%, transparent);
+}
+
+.partnerSummaryMain {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  min-width: 0;
+}
+
+.partnerSummaryBody {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.partnerSummaryHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  min-width: 0;
+
+  > .deletePartnerBtn {
+    position: static;
+    top: auto;
+    right: auto;
+    margin-left: auto;
+    z-index: auto;
+    flex: 0 0 auto;
+  }
+}
+
+.partnerSummaryText {
+  font-size: 12px;
+  color: var(--theme-text-secondary);
+  line-height: 1.6;
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.partnerSummaryStatus {
+  min-width: 0;
+}
+
+.partnerSummaryStatusRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.partnerSummaryStatusMore {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 70%, transparent);
+  background: color-mix(in srgb, var(--theme-card-bg) 78%, transparent);
+  color: var(--theme-text-muted);
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.partnerDetailPanel {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.partnerDetailHeader {
+  @include list-container(8px);
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
+}
+
+.partnerDetailPageMobile {
+  display: none;
+}
+
+.partnerDetailPageTopbar {
+  display: none;
+}
+
+.partnerDetailPageBody {
+  min-height: auto;
+  height: auto;
+  flex: 0 0 auto;
+  display: block;
+}
+
+.partnerBackBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 78%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-card-bg) 72%, transparent);
+  color: var(--theme-text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    transform $transition-fast;
+
+  &:hover {
+    background: color-mix(in srgb, var(--theme-card-bg) 86%, transparent);
+    border-color: color-mix(in srgb, var(--theme-card-border) 94%, transparent);
+    transform: translateY(-1px);
+  }
+}
+
+.partnerName {
+  flex: 1 1 auto;
+  font-weight: 500;
+  color: var(--theme-text-primary);
+  min-width: 0;
+  word-break: break-word;
+}
+
+.partnerTags {
+  display: flex;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 2px 6px;
+  font-size: 10px;
+  border-radius: 3px;
+}
+
+.tagPresent {
+  background: var(--theme-tag-present);
+  color: var(--theme-tag-present-text);
+}
+
+.tagContract {
+  background: var(--theme-tag-contract);
+  color: var(--theme-tag-contract-text);
+}
+
+// 命定之人详情
+.partnerDetails {
+  @include list-container($spacing-md);
+  font-size: 12px;
+}
+
+.partnerDetailNav {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+  padding: 4px;
+  border-radius: $border-radius-md;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
+  background: color-mix(in srgb, var(--theme-card-bg) 58%, transparent);
+}
+
+.partnerDetailTab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: $border-radius-sm;
+  background: transparent;
+  color: var(--theme-text-muted);
+  font-size: 12px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    color $transition-fast;
+
+  &:hover {
+    background: color-mix(in srgb, var(--theme-card-bg) 72%, transparent);
+    color: var(--theme-text-primary);
+  }
+}
+
+.partnerDetailTabActive {
+  border-color: color-mix(in srgb, var(--theme-card-border) 82%, transparent);
+  background: color-mix(in srgb, var(--theme-card-bg) 88%, var(--theme-text-primary) 4%);
+  color: var(--theme-text-primary);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--theme-text-primary) 10%, transparent);
+}
+
+.partnerOverviewHero {
+  @include list-container($spacing-md);
+}
+
+.partnerOverviewPrimary {
+  @include list-container($spacing-sm);
+}
+
+.partnerOverviewIdentityRow {
+  display: flex;
+  align-items: stretch;
+  gap: $spacing-md;
+}
+
+.partnerOverviewAvatar {
+  flex: 0 0 auto;
+}
+
+.partnerOverviewIdentityMeta {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: $spacing-sm;
+  min-width: 0;
+}
+
+.partnerOverviewStats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-sm;
+}
+
+@media (max-width: 760px) {
+  .partnerOverviewIdentityRow {
+    align-items: flex-start;
+  }
+}
+
+.partnerInfoPanel {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-sm;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
+  background: color-mix(in srgb, var(--theme-card-bg) 86%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--theme-text-primary) 6%, transparent);
+}
+
+@media (max-width: 900px) {
+  .partnerCategoryBar {
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .partnerCategoryBtn {
+    flex: 0 0 auto;
+  }
+
+  .partnerSectionTitle {
+    display: block;
+    font-size: 12px;
+  }
+
+  .partnerMasterDetail {
+    grid-template-columns: 1fr;
+  }
+
+  .partnerDetailPanel {
+    display: none;
+  }
+
+  .partnerDetailPageMobile {
+    position: relative;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    width: 100%;
+    min-height: auto;
+    height: auto;
+    padding: $spacing-md 0 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    z-index: auto;
+    overflow: visible;
+    align-items: stretch;
+  }
+
+  .partnerDetailPageTopbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding-bottom: $spacing-xs;
+    background: color-mix(in srgb, var(--theme-content-bg) 72%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .partnerDetailNav {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .partnerDetailTab {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 72px;
+    padding-inline: 14px;
+    white-space: nowrap;
+  }
+
+  .partnerOverviewIdentityRow {
+    flex-direction: column;
+  }
+
+  .partnerInfo {
+    grid-template-columns: 1fr;
+  }
+
+  .attributeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .attributeGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.partnerAffection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-sm;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
+  background: color-mix(in srgb, var(--theme-card-bg) 84%, transparent);
+}
+
+.label {
+  flex-shrink: 0;
+  color: var(--theme-text-secondary);
+}
+
+.affectionBar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.affectionBarTrack {
+  flex: 1;
+  height: 8px;
+  @include bg-overlay-dark;
+  border-radius: 4px;
+  overflow: hidden;
+  border: none;
+}
+
+.affectionBarFill {
+  height: 100%;
+  background: var(--theme-affection);
+  border-radius: 4px;
+  transition: width $transition-normal;
+}
+
+.affectionBarValue {
+  flex-shrink: 0;
+  width: 30px;
+  text-align: right;
+  font-weight: 600;
+  color: var(--theme-affection-text);
+}
+
+.isNegative {
+  &.affectionBarFill {
+    background: var(--theme-error);
+  }
+
+  &.affectionBarValue {
+    color: var(--theme-error);
+  }
+}
+
+// 编辑模式下的状态开关区域
+.partnerStatusToggles {
+  display: flex;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+  @include item-bar;
+  @include bg-overlay-medium-light;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.toggleLabel {
+  font-size: 11px;
+  color: var(--theme-text-secondary);
+}
+
+.partnerInfo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-xs $spacing-md;
+}
+
+@media (max-width: 760px) {
+  .partnerInfo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.infoRow {
+  @include label-value-grid;
+}
+
+@media (max-width: 540px) {
+  .partnerInfo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.infoLabel {
+  color: var(--theme-text-secondary);
+  min-width: 0;
+  word-break: break-word;
+}
+
+.infoValue {
+  color: var(--theme-text-primary);
+  min-width: 0;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+// 外貌与着装
+.partnerAppearance {
+  padding: $spacing-sm 0;
+  border-top: 1px dashed var(--theme-card-border);
+}
+
+.appearanceRow {
+  @include label-value-grid;
+  padding: 2px 0;
+}
+
+.appearanceLabel {
+  color: var(--theme-text-secondary);
+  min-width: 0;
+  word-break: break-word;
+}
+
+.appearanceValue {
+  color: var(--theme-text-primary);
+  line-height: 1.4;
+  min-width: 0;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+@media (max-width: 540px) {
+  .appearanceRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.partnerTraits {
+  padding: $spacing-sm 0;
+  border-top: 1px dashed var(--theme-card-border);
+}
+
+.traitRow {
+  @include label-value-grid;
+  padding: 2px 0;
+}
+
+.traitLabel {
+  color: var(--theme-text-secondary);
+  min-width: 0;
+  word-break: break-word;
+}
+
+.traitValue {
+  color: var(--theme-text-primary);
+  min-width: 0;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+@media (max-width: 540px) {
+  .traitRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.partnerThoughtsPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 68%, transparent);
+  border-radius: $border-radius-sm;
+  background: color-mix(in srgb, var(--theme-card-bg) 72%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
+}
+
+.partnerThoughtsText {
+  flex: 1 1 auto;
+  color: var(--theme-text-primary);
+  line-height: 1.7;
+  font-size: 13px;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.partnerThoughtsButton {
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-card-bg) 86%, transparent);
+  color: var(--theme-text-secondary);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    color $transition-fast,
+    transform $transition-fast;
+
+  &:hover {
+    background: color-mix(in srgb, var(--theme-card-bg) 94%, transparent);
+    border-color: color-mix(in srgb, var(--theme-card-border) 88%, transparent);
+    color: var(--theme-text-primary);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: color-mix(in srgb, var(--theme-card-border) 100%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--theme-tab-indicator) 18%, transparent);
+  }
+}
+
+@media (max-width: 540px) {
+  .partnerThoughtsPreview {
+    padding: 10px 12px;
+  }
+
+  .partnerThoughtsText {
+    font-size: 12px;
+    line-height: 1.65;
+    line-clamp: 4;
+    -webkit-line-clamp: 4;
+  }
+}
+
+// 通用区块标签
+.sectionLabel {
+  color: var(--theme-text-secondary);
+  margin-bottom: $spacing-xs;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+// 属性
+.partnerAttributes {
+  padding: $spacing-sm 0;
+  border-top: 1px dashed var(--theme-card-border);
+}
+
+.attributeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-xs;
+}
+
+// 编辑模式下属性网格改为 2 列，适应编辑器宽度
+.attributeGridEdit {
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-sm;
+}
+
+// 窄屏下编辑模式属性网格改为单列
+@media (max-width: 420px) {
+  .attributeGridEdit {
+    grid-template-columns: 1fr;
+  }
+}
+
+.attributeItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px $spacing-xs;
+  @include bg-overlay-medium-dark;
+  border-radius: 3px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+// 编辑模式下属性项目布局调整
+.attributeItemEdit {
+  flex-direction: row;
+  gap: $spacing-xs;
+  padding: $spacing-xs;
+
+  .attributeKey {
+    flex-shrink: 0;
+    min-width: 28px;
+  }
+}
+
+.attributeKey {
+  color: var(--theme-text-secondary);
+}
+
+.attributeValue {
+  font-weight: 500;
+  color: var(--theme-text-primary);
+}
+
+.partnerAssetHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xs;
+}
+
+.partnerAssetSummary {
+  color: var(--theme-text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.partnerAssetFilterBar {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-bottom: $spacing-sm;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.partnerAssetFilterBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 68%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-card-bg) 64%, transparent);
+  color: var(--theme-text-secondary);
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    color $transition-fast;
+
+  &:hover {
+    background: color-mix(in srgb, var(--theme-card-bg) 80%, transparent);
+    border-color: color-mix(in srgb, var(--theme-card-border) 84%, transparent);
+    color: var(--theme-text-primary);
+  }
+}
+
+.partnerAssetFilterBtnActive {
+  background: color-mix(in srgb, var(--theme-card-bg) 84%, var(--theme-text-primary) 4%);
+  border-color: color-mix(in srgb, var(--theme-card-border) 88%, transparent);
+  color: var(--theme-text-primary);
+}
+
+.partnerAssetFilterCount {
+  color: var(--theme-text-muted);
+  font-size: 10px;
+}
+
+// 装备
+.partnerEquipment {
+  padding: $spacing-sm 0;
+  border-top: 1px dashed var(--theme-card-border);
+}
+
+.equipmentList {
+  @include list-container;
+}
+
+.equipmentSlot {
+  font-size: 11px;
+  color: var(--theme-text-muted);
+}
+
+// 技能
+.partnerSkills {
+  padding: $spacing-sm 0;
+  border-top: 1px dashed var(--theme-card-border);
+}
+
+.skillList {
+  @include list-container;
+}
+
+.skillCost {
+  font-size: 11px;
+  color: var(--theme-text-muted);
+}
+
+// 心里话
+.partnerThoughts {
+  padding-top: $spacing-sm;
+  border-top: 1px dashed var(--theme-card-border);
+}
+
+.thoughtsRow {
+  @include label-value-grid;
+}
+
+.thoughtsLabel {
+  color: var(--theme-text-secondary);
+  min-width: 0;
+  word-break: break-word;
+}
+
+.thoughtsContent {
+  font-style: italic;
+  color: var(--theme-text-primary);
+  line-height: 1.5;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+// 背景故事
+.partnerBackground {
+  padding-top: $spacing-sm;
+  border-top: 1px dashed var(--theme-card-border);
+}
+
+.backgroundRow {
+  @include label-value-grid;
+}
+
+.backgroundLabel {
+  color: var(--theme-text-secondary);
+  min-width: 0;
+  word-break: break-word;
+}
+
+.backgroundContent {
+  color: var(--theme-text-primary);
+  line-height: 1.6;
+  text-align: justify;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+@media (max-width: 540px) {
+  .partnerSummaryMain {
+    gap: $spacing-sm;
+  }
+
+  .partnerSummaryHeader {
+    gap: 6px;
+  }
+
+  .thoughtsRow,
+  .backgroundRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 命定之人详情中的登神长阶
+.partnerAscension {
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1px dashed var(--theme-card-border);
+}
+
+.ascensionLabel {
+  color: var(--theme-text-secondary);
+  margin-bottom: $spacing-sm;
+  font-size: 12px;
+}
+
+// 空提示
+.emptyHint {
+  @include empty-hint($spacing-lg);
+}
+
+// 删除命定之人按钮（编辑模式高亮显示）
+.deletePartnerBtn {
+  @include delete-button-danger;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-left: 0;
+  z-index: 1;
+
+  i {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,644 @@
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+.statusTab {
+  @include page-container;
+  gap: $spacing-sm;
+}
+
+.statusTabCard {
+  background: transparent;
+}
+
+.overviewCard {
+  padding-top: 0;
+}
+
+.overviewHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.overviewHeading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.overviewEyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  line-height: 1.4;
+  letter-spacing: 0.1px;
+}
+
+.overviewTitleRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  min-width: 0;
+}
+
+.overviewAvatarInline {
+  flex: 0 0 auto;
+}
+
+.overviewIdentityBlock {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.overviewIdentityTopRow {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.overviewLevel {
+  font-size: 22px;
+  line-height: 1.05;
+  font-weight: 700;
+  color: var(--theme-text-primary);
+}
+
+.overviewTier {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+}
+
+.overviewSubtitle {
+  font-size: 12px;
+  color: var(--theme-text-muted);
+  line-height: 1.5;
+}
+
+.overviewStats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(72px, 1fr));
+  gap: 10px 16px;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  padding-top: 2px;
+  align-content: start;
+}
+
+.overviewStatItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.overviewStatItemWide {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.overviewStatLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  line-height: 1.4;
+}
+
+.overviewStatValue {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  line-height: 1.25;
+}
+
+.overviewStatSummary {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--theme-text-secondary);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.overviewSummaryGrid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-md;
+  padding-top: $spacing-sm;
+}
+
+.overviewSummaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  min-width: 0;
+}
+
+.primaryGrid {
+  display: block;
+}
+
+.secondaryStack {
+  @include list-container($spacing-sm);
+}
+
+.statusTabLoading,
+.statusTabError,
+.statusTabEmpty {
+  @include state-container;
+}
+
+.statusTabError {
+  color: var(--theme-error);
+}
+
+@media (max-width: 900px) {
+  .overviewStats {
+    grid-template-columns: repeat(4, minmax(56px, 1fr));
+  }
+
+  .overviewSummaryGrid {
+    grid-template-columns: 1fr;
+    gap: $spacing-sm;
+  }
+}
+
+@media (max-width: 540px) {
+  .overviewTitleRow {
+    gap: $spacing-sm;
+  }
+
+  .overviewIdentityBlock {
+    gap: 4px;
+  }
+
+  .overviewIdentityTopRow {
+    gap: 6px;
+  }
+
+  .overviewLevel {
+    font-size: 20px;
+  }
+
+  .overviewStats {
+    grid-template-columns: repeat(3, minmax(40px, 1fr));
+    gap: 8px 10px;
+  }
+
+  .overviewStatValue {
+    font-size: 15px;
+  }
+
+  .overviewStatSummary {
+    font-size: 12px;
+  }
+}
+
+// 基础信息
+.basicInfo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-xs $spacing-md;
+}
+
+.basicInfoRow {
+  display: grid;
+  grid-template-columns: minmax(88px, 0.3fr) minmax(0, 1fr);
+  gap: $spacing-xs;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-card-border) 68%, transparent);
+}
+
+.basicInfoLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  min-width: 0;
+  word-break: break-word;
+}
+
+.basicInfoValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--theme-text-primary);
+  min-width: 0;
+  word-break: break-word;
+}
+
+@media (max-width: 540px) {
+  .basicInfo {
+    grid-template-columns: 1fr;
+  }
+
+  .basicInfoRow {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 6px 0;
+  }
+}
+
+// 资源条
+.resources {
+  @include list-container;
+  gap: 10px;
+}
+
+.detailEntryCard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  background: color-mix(in srgb, var(--theme-card-bg) 86%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
+  border-radius: $border-radius-sm;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    border-color $transition-fast,
+    transform $transition-fast,
+    box-shadow $transition-fast;
+
+  &:hover {
+    background: color-mix(in srgb, var(--theme-card-bg) 82%, transparent);
+    border-color: color-mix(in srgb, var(--theme-card-border) 88%, transparent);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--theme-window-border) 12%, transparent);
+    transform: translateY(-1px);
+  }
+}
+
+.detailEntryHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-sm;
+}
+
+.detailEntryTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  line-height: 1.4;
+}
+
+.detailEntrySummary {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--theme-text-secondary);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.detailEntryMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+}
+
+.detailEntryCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+  white-space: nowrap;
+}
+
+.detailEntryChevron {
+  font-size: 11px;
+  color: var(--theme-text-muted);
+}
+
+@media (max-width: 540px) {
+  .detailEntryHeader {
+    align-items: flex-start;
+  }
+
+  .detailEntryMeta {
+    padding-top: 2px;
+  }
+}
+
+// 资源编辑模式
+.resourceEditRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-xs 0;
+}
+
+.resourceLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+  min-width: 40px;
+}
+
+.resourceEditors {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex: 1;
+}
+
+.resourceSeparator {
+  color: var(--theme-text-muted);
+  font-size: 12px;
+}
+
+.expMax {
+  font-size: 13px;
+  color: var(--theme-text-secondary);
+}
+
+
+.lifeSkillEntryHeadline {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+  line-height: 1.5;
+}
+
+.lifeSkillPreviewList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.lifeSkillPreviewChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-card-bg) 74%, rgba(180, 137, 58, 0.12));
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 70%, rgba(205, 162, 85, 0.24));
+}
+
+.lifeSkillPreviewName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+}
+
+.lifeSkillPreviewLevel {
+  font-size: 11px;
+  color: var(--theme-text-secondary);
+}
+
+.lifeSkillsSheet {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.lifeSkillHero {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border-radius: $border-radius-lg;
+  background:
+    linear-gradient(180deg, rgba(191, 143, 57, 0.12) 0%, rgba(191, 143, 57, 0.04) 100%),
+    color-mix(in srgb, var(--theme-card-bg) 84%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, rgba(201, 154, 78, 0.3));
+  box-shadow: inset 0 1px 0 rgba(255, 235, 189, 0.06);
+}
+
+.lifeSkillHeroHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lifeSkillHeroEyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--theme-text-secondary) 88%, rgba(214, 178, 106, 0.82));
+}
+
+.lifeSkillHeroTitle {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--theme-text-primary);
+}
+
+.lifeSkillHeroDescription {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--theme-text-secondary);
+}
+
+.lifeSkillHeroCards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $spacing-sm;
+}
+
+.lifeSkillHeroCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: $spacing-sm;
+  border-radius: $border-radius-md;
+  background: color-mix(in srgb, var(--theme-card-bg) 72%, rgba(18, 12, 7, 0.28));
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 64%, rgba(208, 163, 90, 0.18));
+}
+
+.lifeSkillHeroCardLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+}
+
+.lifeSkillHeroCardValue {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--theme-text-primary);
+  word-break: break-word;
+}
+
+.lifeSkillHeroCardHint {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--theme-text-muted);
+}
+
+.lifeSkillGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-sm;
+}
+
+.lifeSkillCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  background: color-mix(in srgb, var(--theme-card-bg) 86%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--theme-text-primary) 4%, transparent);
+}
+
+.lifeSkillCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-sm;
+}
+
+.lifeSkillCardTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.lifeSkillCardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--theme-text-primary);
+}
+
+.lifeSkillCardLevel {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--theme-text-primary) 88%, rgba(232, 201, 138, 0.92));
+  background: color-mix(in srgb, rgba(181, 134, 56, 0.18) 88%, transparent);
+  border: 1px solid color-mix(in srgb, rgba(198, 152, 76, 0.3) 88%, transparent);
+}
+
+.lifeSkillCardMastery {
+  flex-shrink: 0;
+  padding-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+  text-align: right;
+}
+
+.lifeSkillBar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-window-bg) 80%, rgba(0, 0, 0, 0.18));
+}
+
+.lifeSkillBarFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(158, 118, 39, 0.82) 0%, rgba(230, 193, 115, 0.95) 100%);
+  box-shadow: 0 0 12px rgba(211, 171, 91, 0.18);
+}
+
+.lifeSkillExpRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+}
+
+.lifeSkillExpText {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+}
+
+.lifeSkillExpValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+}
+
+.lifeSkillEditorGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--theme-card-border) 56%, transparent);
+}
+
+.lifeSkillEditorRow {
+  display: grid;
+  grid-template-columns: minmax(70px, 0.35fr) minmax(0, 1fr);
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.lifeSkillEditorLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+}
+
+.lifeSkillFootnote {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--theme-text-muted);
+}
+
+@media (max-width: 900px) {
+  .lifeSkillHeroCards,
+  .lifeSkillGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 540px) {
+  .lifeSkillPreviewList {
+    gap: 6px;
+  }
+
+  .lifeSkillPreviewChip {
+    max-width: 100%;
+  }
+
+  .lifeSkillCardHeader,
+  .lifeSkillExpRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lifeSkillCardMastery {
+    text-align: left;
+  }
+
+  .lifeSkillEditorRow {
+    grid-template-columns: 1fr;
+  }
+}
