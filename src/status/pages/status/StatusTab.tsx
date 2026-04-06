@@ -1,20 +1,8 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useDeleteConfirm } from '../../core/hooks';
 import { useEditorSettingStore } from '../../core/stores';
 import {
-  exportAvatarFile,
-  getAvatarActionState,
-  getAvatarRecord,
-  getAvatarScopeKey,
-  isAvatarRemovedRecord,
-  readAvatarFileAsDataUrl,
-  removeAvatarRecord,
-  saveAvatarRecord,
-} from '../../core/utils';
-import {
   Ascension,
-  AvatarActionModal,
-  AvatarPanel,
   Card,
   DeleteConfirmModal,
   DetailSheet,
@@ -113,127 +101,7 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
   const { deleteTarget, setDeleteTarget, handleDelete, cancelDelete, isConfirmOpen } =
     useDeleteConfirm();
   const [activeDetail, setActiveDetail] = useState<DetailKey | null>(null);
-  const [playerAvatarUrl, setPlayerAvatarUrl] = useState<string>('');
-  const [playerDefaultAvatarUrl, setPlayerDefaultAvatarUrl] = useState<string>('');
-  const [isPlayerAvatarRemoved, setIsPlayerAvatarRemoved] = useState(false);
-  const [isPlayerAvatarModalOpen, setIsPlayerAvatarModalOpen] = useState(false);
   const player = data.主角;
-  const avatarScopeKey = useMemo(() => getAvatarScopeKey(), []);
-
-  useEffect(() => {
-    let ignore = false;
-
-    const loadPlayerAvatar = async () => {
-      try {
-        const [savedRecord, resolvedAvatarPath] = await Promise.all([
-          getAvatarRecord(avatarScopeKey, 'player', '主角'),
-          SillyTavern.substituteParams('{{userAvatarPath}}') as unknown as Promise<string>,
-        ]);
-        const normalizedAvatarPath = _.trim(resolvedAvatarPath || '');
-        const normalizedDefaultAvatarPath =
-          normalizedAvatarPath && normalizedAvatarPath !== '{{userAvatarPath}}'
-            ? normalizedAvatarPath
-            : '';
-
-        if (!ignore) {
-          setPlayerAvatarUrl(isAvatarRemovedRecord(savedRecord) ? '' : (savedRecord?.value ?? ''));
-          setIsPlayerAvatarRemoved(isAvatarRemovedRecord(savedRecord));
-          setPlayerDefaultAvatarUrl(normalizedDefaultAvatarPath);
-        }
-      } catch (error) {
-        console.warn('[StatusTab] 读取主角头像失败:', error);
-        if (!ignore) {
-          setPlayerAvatarUrl('');
-          setPlayerDefaultAvatarUrl('');
-          setIsPlayerAvatarRemoved(false);
-        }
-      }
-    };
-
-    void loadPlayerAvatar();
-
-    return () => {
-      ignore = true;
-    };
-  }, [avatarScopeKey]);
-
-  const handlePlayerAvatarUpload = async (file: File) => {
-    try {
-      const nextAvatarUrl = await readAvatarFileAsDataUrl(file);
-      if (!nextAvatarUrl) {
-        return;
-      }
-
-      await saveAvatarRecord({
-        scope_key: avatarScopeKey,
-        owner_type: 'player',
-        owner_name: '主角',
-        source_type: 'upload',
-        value: nextAvatarUrl,
-      });
-      setPlayerAvatarUrl(nextAvatarUrl);
-      setIsPlayerAvatarRemoved(false);
-    } catch (error) {
-      console.warn('[StatusTab] 上传主角头像失败:', error);
-    }
-  };
-
-  const handlePlayerAvatarUrlInput = async (url_input: string) => {
-    const nextAvatarUrl = _.trim(url_input || '');
-
-    if (!nextAvatarUrl) {
-      return;
-    }
-
-    try {
-      await saveAvatarRecord({
-        scope_key: avatarScopeKey,
-        owner_type: 'player',
-        owner_name: '主角',
-        source_type: 'url',
-        value: nextAvatarUrl,
-      });
-      setPlayerAvatarUrl(nextAvatarUrl);
-      setIsPlayerAvatarRemoved(false);
-    } catch (error) {
-      console.warn('[StatusTab] 保存主角头像链接失败:', error);
-    }
-  };
-
-  const handlePlayerAvatarExport = async () => {
-    if (!playerAvatarDisplayUrl) {
-      return;
-    }
-
-    try {
-      await exportAvatarFile('player-avatar.png', playerAvatarDisplayUrl);
-    } catch (error) {
-      console.warn('[StatusTab] 导出主角头像失败:', error);
-    }
-  };
-
-  const handlePlayerAvatarReset = async () => {
-    try {
-      await removeAvatarRecord(avatarScopeKey, 'player', '主角');
-      setPlayerAvatarUrl('');
-      setIsPlayerAvatarRemoved(false);
-    } catch (error) {
-      console.warn('[StatusTab] 恢复默认主角头像失败:', error);
-    }
-  };
-
-  const handlePlayerAvatarRemove = async () => {
-    await handlePlayerAvatarReset();
-  };
-
-  const handlePlayerAvatarImageError = () => {
-    if (playerAvatarUrl) {
-      setPlayerAvatarUrl('');
-      return;
-    }
-
-    setPlayerDefaultAvatarUrl('');
-  };
 
   /**
    * 格式化基础信息显示值
@@ -382,23 +250,12 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
   const lifeSkillSummary = lifeSkillRecordedCount
     ? `主修 ${lifeSkillPrimary} · 总熟练度 ${lifeSkillTotalMastery} · 已记录 ${lifeSkillRecordedCount}/${lifeSkillCategoryCount}`
     : `黑沙式生活信息面板 · ${lifeSkillCategoryCount} 项分类待记录`;
-  const lifeSkillSheetSubtitle = `${lifeSkillCategoryCount} 项生活分类`;
-
-  const playerAvatarDisplayUrl = isPlayerAvatarRemoved
-    ? ''
-    : playerAvatarUrl || playerDefaultAvatarUrl;
-
-  const playerAvatarActionState = getAvatarActionState({
-    current_url: playerAvatarDisplayUrl,
-    custom_url: playerAvatarUrl,
-    default_url: playerDefaultAvatarUrl,
-    removed: isPlayerAvatarRemoved,
-  });
+  const lifeSkillSheetSubtitle = `当前主修 ${lifeSkillPrimary} · 总熟练度 ${lifeSkillTotalMastery} · 已记录 ${lifeSkillRecordedCount}/${lifeSkillCategoryCount}`;
 
   const renderLifeSkillCard = (entry: LifeSkillViewModel) => (
     <div key={entry.key} className={styles.lifeSkillCard}>
       <div className={styles.lifeSkillCardHeader}>
-        <div className={styles.lifeSkillCardTitleRow}>
+        <div className={styles.lifeSkillCardTitleGroup}>
           <span className={styles.lifeSkillCardTitle}>{entry.label}</span>
           <span className={styles.lifeSkillCardLevel}>{entry.level}</span>
         </div>
@@ -410,10 +267,13 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
       </div>
 
       <div className={styles.lifeSkillExpRow}>
-        <span className={styles.lifeSkillExpValue}>EXP {entry.currentExp} / {entry.maxExp}</span>
+        <span className={styles.lifeSkillExpText}>当前 EXP</span>
+        <span className={styles.lifeSkillExpValue}>
+          {entry.currentExp} / {entry.maxExp}
+        </span>
       </div>
 
-      {editEnabled && (
+      {editEnabled ? (
         <div className={styles.lifeSkillEditorGrid}>
           <div className={styles.lifeSkillEditorRow}>
             <span className={styles.lifeSkillEditorLabel}>等级</span>
@@ -447,6 +307,12 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
             />
           </div>
         </div>
+      ) : (
+        <div className={styles.lifeSkillFootnote}>
+          {entry.active
+            ? `进度 ${entry.progress}%`
+            : '未记录进度，可在编辑模式中填写等级、熟练度与经验值。'}
+        </div>
       )}
     </div>
   );
@@ -458,14 +324,6 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
           <div className={styles.overviewHeading}>
             <span className={styles.overviewEyebrow}>角色总览</span>
             <div className={styles.overviewTitleRow}>
-              <AvatarPanel
-                src={playerAvatarDisplayUrl}
-                alt="主角头像"
-                size="lg"
-                className={styles.overviewAvatarInline}
-                onClick={() => setIsPlayerAvatarModalOpen(true)}
-                onImageError={handlePlayerAvatarImageError}
-              />
               <div className={styles.overviewIdentityBlock}>
                 <div className={styles.overviewIdentityTopRow}>
                   <span className={styles.overviewLevel}>Lv.{player.等级 ?? 1}</span>
@@ -650,7 +508,7 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
                   ))}
                 </div>
               ) : (
-                <div className={styles.detailEntrySummary}>11 项黑沙生活分类</div>
+                <div className={styles.detailEntrySummary}>已预设 11 项黑沙式生活分类，等待填写等级与经验。</div>
               )}
             </div>
             <div className={styles.detailEntryMeta}>
@@ -697,31 +555,46 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
         onClose={() => setActiveDetail(null)}
       >
         <div className={styles.lifeSkillsSheet}>
+          <div className={styles.lifeSkillHero}>
+            <div className={styles.lifeSkillHeroHeader}>
+              <span className={styles.lifeSkillHeroEyebrow}>Black Desert 风格生活信息</span>
+              <div className={styles.lifeSkillHeroTitle}>分类等级 · 熟练度 · 经验进度</div>
+              <div className={styles.lifeSkillHeroDescription}>
+                面板结构参考黑色沙漠 Life Skill 信息页，先提供静态字段与可编辑展示，不接自动升级逻辑。
+              </div>
+            </div>
+
+            <div className={styles.lifeSkillHeroCards}>
+              <div className={styles.lifeSkillHeroCard}>
+                <span className={styles.lifeSkillHeroCardLabel}>当前主修</span>
+                {editEnabled ? (
+                  <EditableField
+                    path="主角.生活职业.当前主修"
+                    value={_.get(lifeSkillState, '当前主修', '')}
+                    type="text"
+                  />
+                ) : (
+                  <span className={styles.lifeSkillHeroCardValue}>{lifeSkillPrimary}</span>
+                )}
+              </div>
+              <div className={styles.lifeSkillHeroCard}>
+                <span className={styles.lifeSkillHeroCardLabel}>总熟练度</span>
+                <span className={styles.lifeSkillHeroCardValue}>{lifeSkillTotalMastery}</span>
+                <span className={styles.lifeSkillHeroCardHint}>按各分类熟练度汇总显示</span>
+              </div>
+              <div className={styles.lifeSkillHeroCard}>
+                <span className={styles.lifeSkillHeroCardLabel}>已记录进度</span>
+                <span className={styles.lifeSkillHeroCardValue}>
+                  {lifeSkillRecordedCount}/{lifeSkillCategoryCount}
+                </span>
+                <span className={styles.lifeSkillHeroCardHint}>默认预设全部黑沙生活分类</span>
+              </div>
+            </div>
+          </div>
+
           <div className={styles.lifeSkillGrid}>{lifeSkillEntries.map(renderLifeSkillCard)}</div>
         </div>
       </DetailSheet>
-
-      <AvatarActionModal
-        open={isPlayerAvatarModalOpen}
-        title="主角头像"
-        subtitle={
-          playerAvatarDisplayUrl
-            ? '支持导入本地图片、保存图片链接、导出当前头像，或恢复到酒馆默认头像。'
-            : '当前未设置头像，可导入图片、填写图片链接，或恢复到酒馆默认头像。'
-        }
-        linkPlaceholder="请输入主角头像图片链接"
-        canExport={playerAvatarActionState.canExport}
-        canDelete={false}
-        canReset={playerAvatarActionState.canReset}
-        deleteLabel="删除头像"
-        resetLabel="恢复默认"
-        onClose={() => setIsPlayerAvatarModalOpen(false)}
-        onUpload={handlePlayerAvatarUpload}
-        onSubmitLink={handlePlayerAvatarUrlInput}
-        onExport={handlePlayerAvatarExport}
-        onDelete={handlePlayerAvatarRemove}
-        onReset={handlePlayerAvatarReset}
-      />
 
       <DeleteConfirmModal
         open={isConfirmOpen}
