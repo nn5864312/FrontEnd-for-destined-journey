@@ -382,7 +382,7 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
   const lifeSkillSummary = lifeSkillRecordedCount
     ? `主修 ${lifeSkillPrimary} · 总熟练度 ${lifeSkillTotalMastery} · 已记录 ${lifeSkillRecordedCount}/${lifeSkillCategoryCount}`
     : `黑沙式生活信息面板 · ${lifeSkillCategoryCount} 项分类待记录`;
-  const lifeSkillSheetSubtitle = `当前主修 ${lifeSkillPrimary} · 总熟练度 ${lifeSkillTotalMastery} · 已记录 ${lifeSkillRecordedCount}/${lifeSkillCategoryCount}`;
+  const lifeSkillSheetSubtitle = `${lifeSkillCategoryCount} 项生活分类`;
 
   const playerAvatarDisplayUrl = isPlayerAvatarRemoved
     ? ''
@@ -398,7 +398,7 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
   const renderLifeSkillCard = (entry: LifeSkillViewModel) => (
     <div key={entry.key} className={styles.lifeSkillCard}>
       <div className={styles.lifeSkillCardHeader}>
-        <div className={styles.lifeSkillCardTitleGroup}>
+        <div className={styles.lifeSkillCardTitleRow}>
           <span className={styles.lifeSkillCardTitle}>{entry.label}</span>
           <span className={styles.lifeSkillCardLevel}>{entry.level}</span>
         </div>
@@ -410,13 +410,10 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
       </div>
 
       <div className={styles.lifeSkillExpRow}>
-        <span className={styles.lifeSkillExpText}>当前 EXP</span>
-        <span className={styles.lifeSkillExpValue}>
-          {entry.currentExp} / {entry.maxExp}
-        </span>
+        <span className={styles.lifeSkillExpValue}>EXP {entry.currentExp} / {entry.maxExp}</span>
       </div>
 
-      {editEnabled ? (
+      {editEnabled && (
         <div className={styles.lifeSkillEditorGrid}>
           <div className={styles.lifeSkillEditorRow}>
             <span className={styles.lifeSkillEditorLabel}>等级</span>
@@ -449,12 +446,6 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
               numberConfig={{ min: 0, step: 1 }}
             />
           </div>
-        </div>
-      ) : (
-        <div className={styles.lifeSkillFootnote}>
-          {entry.active
-            ? `进度 ${entry.progress}%`
-            : '未记录进度，可在编辑模式中填写等级、熟练度与经验值。'}
         </div>
       )}
     </div>
@@ -659,7 +650,7 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
                   ))}
                 </div>
               ) : (
-                <div className={styles.detailEntrySummary}>已预设 11 项黑沙式生活分类，等待填写等级与经验。</div>
+                <div className={styles.detailEntrySummary}>11 项黑沙生活分类</div>
               )}
             </div>
             <div className={styles.detailEntryMeta}>
@@ -706,43 +697,6 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
         onClose={() => setActiveDetail(null)}
       >
         <div className={styles.lifeSkillsSheet}>
-          <div className={styles.lifeSkillHero}>
-            <div className={styles.lifeSkillHeroHeader}>
-              <span className={styles.lifeSkillHeroEyebrow}>Black Desert 风格生活信息</span>
-              <div className={styles.lifeSkillHeroTitle}>分类等级 · 熟练度 · 经验进度</div>
-              <div className={styles.lifeSkillHeroDescription}>
-                面板结构参考黑色沙漠 Life Skill 信息页，先提供静态字段与可编辑展示，不接自动升级逻辑。
-              </div>
-            </div>
-
-            <div className={styles.lifeSkillHeroCards}>
-              <div className={styles.lifeSkillHeroCard}>
-                <span className={styles.lifeSkillHeroCardLabel}>当前主修</span>
-                {editEnabled ? (
-                  <EditableField
-                    path="主角.生活职业.当前主修"
-                    value={_.get(lifeSkillState, '当前主修', '')}
-                    type="text"
-                  />
-                ) : (
-                  <span className={styles.lifeSkillHeroCardValue}>{lifeSkillPrimary}</span>
-                )}
-              </div>
-              <div className={styles.lifeSkillHeroCard}>
-                <span className={styles.lifeSkillHeroCardLabel}>总熟练度</span>
-                <span className={styles.lifeSkillHeroCardValue}>{lifeSkillTotalMastery}</span>
-                <span className={styles.lifeSkillHeroCardHint}>按各分类熟练度汇总显示</span>
-              </div>
-              <div className={styles.lifeSkillHeroCard}>
-                <span className={styles.lifeSkillHeroCardLabel}>已记录进度</span>
-                <span className={styles.lifeSkillHeroCardValue}>
-                  {lifeSkillRecordedCount}/{lifeSkillCategoryCount}
-                </span>
-                <span className={styles.lifeSkillHeroCardHint}>默认预设全部黑沙生活分类</span>
-              </div>
-            </div>
-          </div>
-
           <div className={styles.lifeSkillGrid}>{lifeSkillEntries.map(renderLifeSkillCard)}</div>
         </div>
       </DetailSheet>

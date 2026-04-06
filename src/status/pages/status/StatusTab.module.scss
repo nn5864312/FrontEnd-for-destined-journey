@@ -408,98 +408,20 @@
 .lifeSkillsSheet {
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
-}
-
-.lifeSkillHero {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-md;
-  padding: $spacing-md;
-  border-radius: $border-radius-lg;
-  background:
-    linear-gradient(180deg, rgba(191, 143, 57, 0.12) 0%, rgba(191, 143, 57, 0.04) 100%),
-    color-mix(in srgb, var(--theme-card-bg) 84%, transparent);
-  border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, rgba(201, 154, 78, 0.3));
-  box-shadow: inset 0 1px 0 rgba(255, 235, 189, 0.06);
-}
-
-.lifeSkillHeroHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.lifeSkillHeroEyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--theme-text-secondary) 88%, rgba(214, 178, 106, 0.82));
-}
-
-.lifeSkillHeroTitle {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--theme-text-primary);
-}
-
-.lifeSkillHeroDescription {
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--theme-text-secondary);
-}
-
-.lifeSkillHeroCards {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: $spacing-sm;
-}
-
-.lifeSkillHeroCard {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-  padding: $spacing-sm;
-  border-radius: $border-radius-md;
-  background: color-mix(in srgb, var(--theme-card-bg) 72%, rgba(18, 12, 7, 0.28));
-  border: 1px solid color-mix(in srgb, var(--theme-card-border) 64%, rgba(208, 163, 90, 0.18));
-}
-
-.lifeSkillHeroCardLabel {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--theme-text-secondary);
-}
-
-.lifeSkillHeroCardValue {
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--theme-text-primary);
-  word-break: break-word;
-}
-
-.lifeSkillHeroCardHint {
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--theme-text-muted);
 }
 
 .lifeSkillGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: $spacing-sm;
+  gap: 10px;
 }
 
 .lifeSkillCard {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
-  padding: $spacing-md;
+  padding: 12px 14px;
   border-radius: $border-radius-md;
   background: color-mix(in srgb, var(--theme-card-bg) 86%, transparent);
   border: 1px solid color-mix(in srgb, var(--theme-card-border) 72%, transparent);
@@ -508,20 +430,21 @@
 
 .lifeSkillCardHeader {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: $spacing-sm;
 }
 
-.lifeSkillCardTitleGroup {
+.lifeSkillCardTitleRow {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 8px;
   min-width: 0;
+  flex-wrap: wrap;
 }
 
 .lifeSkillCardTitle {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.35;
   color: var(--theme-text-primary);
@@ -531,7 +454,7 @@
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
@@ -542,7 +465,6 @@
 
 .lifeSkillCardMastery {
   flex-shrink: 0;
-  padding-top: 2px;
   font-size: 12px;
   font-weight: 600;
   color: var(--theme-text-secondary);
@@ -552,7 +474,7 @@
 .lifeSkillBar {
   position: relative;
   width: 100%;
-  height: 8px;
+  height: 6px;
   overflow: hidden;
   border-radius: 999px;
   background: color-mix(in srgb, var(--theme-window-bg) 80%, rgba(0, 0, 0, 0.18));
@@ -569,8 +491,7 @@
 .lifeSkillExpRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: $spacing-sm;
+  justify-content: flex-end;
 }
 
 .lifeSkillExpText {
@@ -580,7 +501,7 @@
 }
 
 .lifeSkillExpValue {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--theme-text-primary);
 }
@@ -588,7 +509,7 @@
 .lifeSkillEditorGrid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   padding-top: 4px;
   border-top: 1px solid color-mix(in srgb, var(--theme-card-border) 56%, transparent);
 }
@@ -606,14 +527,7 @@
   color: var(--theme-text-secondary);
 }
 
-.lifeSkillFootnote {
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--theme-text-muted);
-}
-
 @media (max-width: 900px) {
-  .lifeSkillHeroCards,
   .lifeSkillGrid {
     grid-template-columns: 1fr;
   }
@@ -628,10 +542,12 @@
     max-width: 100%;
   }
 
-  .lifeSkillCardHeader,
-  .lifeSkillExpRow {
-    flex-direction: column;
+  .lifeSkillCardHeader {
     align-items: flex-start;
+  }
+
+  .lifeSkillExpRow {
+    justify-content: flex-start;
   }
 
   .lifeSkillCardMastery {
