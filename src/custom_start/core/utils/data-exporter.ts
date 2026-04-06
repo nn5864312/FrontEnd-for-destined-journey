@@ -2,6 +2,34 @@ import { getLevelTierName, getTierAttributeBonus } from '../data/base-info';
 import { RARITY_MAP } from '../data/constants';
 import type { Background, CharacterConfig, Equipment, Item, Partner, Skill } from '../types';
 
+const LIFE_SKILL_NAMES = [
+  '采集',
+  '钓鱼',
+  '狩猎',
+  '料理',
+  '炼金',
+  '加工',
+  '驯养',
+  '贸易',
+  '耕种',
+  '航海',
+  '物物交换',
+] as const;
+
+const createDefaultLifeSkillTree = () => ({
+  分类: _.fromPairs(
+    _.map(LIFE_SKILL_NAMES, name => [
+      name,
+      {
+        等级: '初级 1',
+        当前经验: 0,
+        升级所需经验: 100,
+        熟练度: 0,
+      },
+    ]),
+  ),
+});
+
 /**
  * 将角色数据写入到 MVU 变量中
  * 使用 lodash 的 _.set 直接操作 stat_data，然后通过 replaceMvuData 写回
@@ -56,6 +84,9 @@ export async function writeCharacterToMvu(
   _.set(mvuData, 'stat_data.主角.背包', bagData);
   _.set(mvuData, 'stat_data.主角.金钱', Math.max(0, Math.round(character.money)));
   _.set(mvuData, 'stat_data.主角.等级', character.level);
+
+  // 生活职业：完整写入 11 项默认树，避免只靠前端 schema 临时补默认值
+  _.set(mvuData, 'stat_data.主角.生活职业', createDefaultLifeSkillTree());
 
   // 关系列表
   const relationData = _.fromPairs(
@@ -206,7 +237,6 @@ export function generateAIPrompt(
         });
       }
       if (eq.description) lines.push(`  描述: ${eq.description}`);
-      // 在项目之间添加空行（末尾不加）
       if (index < equipments.length - 1) lines.push('');
     });
   }
@@ -229,7 +259,6 @@ export function generateAIPrompt(
         });
       }
       if (item.description) lines.push(`  描述: ${item.description}`);
-      // 在项目之间添加空行（末尾不加）
       if (index < customItems.length - 1) lines.push('');
     });
   }
@@ -252,7 +281,6 @@ export function generateAIPrompt(
         });
       }
       if (skill.description) lines.push(`  描述: ${skill.description}`);
-      // 在项目之间添加空行（末尾不加）
       if (index < customSkills.length - 1) lines.push('');
     });
   }
@@ -297,7 +325,6 @@ export function generateAIPrompt(
               });
             }
             if (eq.description) lines.push(`      描述: ${eq.description}`);
-            // 在装备之间添加空行（末尾不加）
             if (eqIndex < validEquips.length - 1) lines.push('');
           });
         }
@@ -330,7 +357,6 @@ export function generateAIPrompt(
             });
           }
           if (sk.description) lines.push(`      描述: ${sk.description}`);
-          // 在技能之间添加空行（末尾不加）
           if (skIndex < partner.skills.length - 1) lines.push('');
         });
       }
@@ -342,7 +368,6 @@ export function generateAIPrompt(
     lines.push('');
     lines.push('【初始开局剧情】');
     lines.push(`${background.name}`);
-    // 自定义开局使用用户输入的描述，否则使用预设描述
     const description =
       background.name === '【自定义开局】' && customBackgroundDescription
         ? customBackgroundDescription
