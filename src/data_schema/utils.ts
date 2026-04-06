@@ -62,7 +62,10 @@ export const BaseItemSchema = z.object({
  * 装备schema
  */
 export const EquipmentSchema = BaseItemSchema.extend({
-  位置: z.string().prefault(''),
+  部位: z.string().prefault(''),
+  强化等级: z.string().prefault('+0'),
+  强化保底进度: z.string().prefault('0'),
+  耐久度: z.string().prefault('100'),
 });
 
 /**

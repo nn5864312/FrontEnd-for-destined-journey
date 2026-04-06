@@ -431,7 +431,19 @@
           "描述": {
             "$ref": "#/$defs/__schema11"
           },
-          "位置": {
+          "部位": {
+            "type": "string"
+          },
+          "强化等级": {
+            "default": "+0",
+            "type": "string"
+          },
+          "强化保底进度": {
+            "default": "0",
+            "type": "string"
+          },
+          "耐久度": {
+            "default": "100",
             "type": "string"
           }
         }
