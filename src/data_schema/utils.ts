@@ -62,10 +62,7 @@ export const BaseItemSchema = z.object({
  * 装备schema
  */
 export const EquipmentSchema = BaseItemSchema.extend({
-  部位: z.string().prefault(''),
-  强化等级: z.string().prefault('+0'),
-  强化保底进度: z.string().prefault('0'),
-  耐久度: z.string().prefault('100'),
+  位置: z.string().prefault(''),
 });
 
 /**
@@ -110,7 +107,6 @@ export const BaseAttrSchema = z
   .object(_.mapValues(DefaultAttr, () => z.coerce.number().prefault(0)))
   .prefault({});
 
-
 const DefaultLifeSkillCategories = {
   采集: {},
   钓鱼: {},
@@ -125,7 +121,7 @@ const DefaultLifeSkillCategories = {
   物物交换: {},
 } as const;
 
-const LifeSkillRankMaxMap = {
+export const LifeSkillRankMaxMap = {
   初级: 10,
   见习: 10,
   熟练: 10,
@@ -304,10 +300,26 @@ const LifeSkillLevelExpTable = {
   '道人 50': 99700000,
 } as const;
 
-const DEFAULT_LIFE_SKILL_LEVEL = '初级 1';
-const DEFAULT_LIFE_SKILL_EXP = LifeSkillLevelExpTable[DEFAULT_LIFE_SKILL_LEVEL];
+export const DEFAULT_LIFE_SKILL_LEVEL = '初级 1';
+export const DEFAULT_LIFE_SKILL_EXP = LifeSkillLevelExpTable[DEFAULT_LIFE_SKILL_LEVEL];
+export const LifeSkillRankOrder = ['初级', '见习', '熟练', '专家', '匠人', '名匠', '道人'] as const;
 
-const normalizeLifeSkillLevel = (value: unknown) => {
+type LifeSkillRank = (typeof LifeSkillRankOrder)[number];
+
+const parseLifeSkillLevel = (level: string) => {
+  const normalized = normalizeLifeSkillLevel(level);
+  const match = normalized.match(/^([^\d]+)\s*(\d{1,2})$/);
+
+  if (!match) {
+    return { rank: '初级' as LifeSkillRank, step: 1, normalized: DEFAULT_LIFE_SKILL_LEVEL };
+  }
+
+  const rank = _.trim(match[1]) as LifeSkillRank;
+  const step = Number(match[2]);
+  return { rank, step, normalized };
+};
+
+export const normalizeLifeSkillLevel = (value: unknown) => {
   const normalized = _.trim(_.toString(value ?? ''));
   if (!normalized) {
     return DEFAULT_LIFE_SKILL_LEVEL;
@@ -330,8 +342,58 @@ const normalizeLifeSkillLevel = (value: unknown) => {
   return `${canonicalRank} ${safeLevel}` as keyof typeof LifeSkillLevelExpTable;
 };
 
-const getLifeSkillExpByLevel = (level: string) =>
+export const getLifeSkillExpByLevel = (level: string) =>
   LifeSkillLevelExpTable[level as keyof typeof LifeSkillLevelExpTable] ?? DEFAULT_LIFE_SKILL_EXP;
+
+export const isMaxLifeSkillLevel = (level: string) =>
+  normalizeLifeSkillLevel(level) === '道人 50';
+
+export const getNextLifeSkillLevel = (level: string) => {
+  const { rank, step } = parseLifeSkillLevel(level);
+  const maxStep = LifeSkillRankMaxMap[rank];
+
+  if (step < maxStep) {
+    return `${rank} ${step + 1}`;
+  }
+
+  const rankIndex = LifeSkillRankOrder.indexOf(rank);
+  if (rankIndex < 0 || rankIndex >= LifeSkillRankOrder.length - 1) {
+    return `${rank} ${maxStep}`;
+  }
+
+  return `${LifeSkillRankOrder[rankIndex + 1]} 1`;
+};
+
+const normalizeLifeSkillEntry = (entry: {
+  等级?: unknown;
+  当前经验?: unknown;
+  升级所需经验?: unknown;
+  熟练度?: unknown;
+}) => {
+  let level = normalizeLifeSkillLevel(entry.等级);
+  let currentExp = Math.max(0, Math.round(Number(entry.当前经验) || 0));
+  let mastery = Math.max(0, Math.round(Number(entry.熟练度) || 0));
+  let requiredExp = getLifeSkillExpByLevel(level);
+
+  let guard = 0;
+  while (!isMaxLifeSkillLevel(level) && currentExp >= requiredExp && guard < 200) {
+    currentExp -= requiredExp;
+    level = getNextLifeSkillLevel(level);
+    requiredExp = getLifeSkillExpByLevel(level);
+    guard += 1;
+  }
+
+  if (isMaxLifeSkillLevel(level)) {
+    requiredExp = getLifeSkillExpByLevel(level);
+  }
+
+  return {
+    等级: level,
+    当前经验: currentExp,
+    升级所需经验: requiredExp,
+    熟练度: mastery,
+  };
+};
 
 export const LifeSkillEntrySchema = z
   .object({
@@ -341,16 +403,7 @@ export const LifeSkillEntrySchema = z
     熟练度: z.coerce.number().prefault(0),
   })
   .prefault({})
-  .transform(data => {
-    const normalizedLevel = normalizeLifeSkillLevel(data.等级);
-
-    return {
-      等级: normalizedLevel,
-      当前经验: Math.max(0, Math.round(data.当前经验)),
-      升级所需经验: getLifeSkillExpByLevel(normalizedLevel),
-      熟练度: Math.max(0, Math.round(data.熟练度)),
-    };
-  });
+  .transform(data => normalizeLifeSkillEntry(data));
 
 export const LifeSkillsSchema = z
   .object({
@@ -361,18 +414,15 @@ export const LifeSkillsSchema = z
       .prefault({}),
   })
   .prefault({})
-  .transform(data => ({
-    当前主修: _.trim(data.当前主修 || ''),
-    分类: _.mapValues(data.分类, item => {
-      const normalizedLevel = normalizeLifeSkillLevel(item.等级);
-      return {
-        ...item,
-        等级: normalizedLevel,
-        升级所需经验: getLifeSkillExpByLevel(normalizedLevel),
-      };
-    }),
-    总熟练度: Math.max(0, _.sumBy(_.values(data.分类), item => item.熟练度 ?? 0)),
-  }));
+  .transform(data => {
+    const normalizedCategories = _.mapValues(data.分类, item => normalizeLifeSkillEntry(item));
+
+    return {
+      当前主修: _.trim(data.当前主修 || ''),
+      分类: normalizedCategories,
+      总熟练度: Math.max(0, _.sumBy(_.values(normalizedCategories), item => item.熟练度 ?? 0)),
+    };
+  });
 
 /**
  * 登神长阶 schema
