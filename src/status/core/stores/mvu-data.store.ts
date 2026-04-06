@@ -44,10 +44,12 @@ export const useMvuDataStore = create<MvuDataStore>()(
       });
 
       try {
+        const messageId = getCurrentMessageId();
+
         // 获取当前消息楼层的变量数据
         const variables = getVariables({
           type: 'message',
-          message_id: getCurrentMessageId(),
+          message_id: messageId,
         });
 
         // 提取并解析 stat_data
@@ -62,6 +64,32 @@ export const useMvuDataStore = create<MvuDataStore>()(
           });
 
           return;
+        }
+
+        // 关键迁移：若 schema 补出了旧树缺失的字段（如生活职业），
+        // 则将规范化后的 stat_data 真正写回底层变量，避免仅显示层有默认值、
+        // 下一轮 patch 仍基于旧树执行的问题。
+        if (!_.isEqual(rawData, result.data)) {
+          void (async () => {
+            try {
+              await waitGlobalInitialized('Mvu');
+              const mvuData = Mvu.getMvuData({
+                type: 'message',
+                message_id: messageId,
+              });
+
+              _.set(mvuData, 'stat_data', result.data);
+
+              await Mvu.replaceMvuData(mvuData, {
+                type: 'message',
+                message_id: messageId,
+              });
+
+              console.log('[StatusBar] 已将 schema 规范化结果写回原始 stat_data');
+            } catch (e) {
+              console.error('[StatusBar] 写回规范化 stat_data 失败:', e);
+            }
+          })();
         }
 
         set(state => {

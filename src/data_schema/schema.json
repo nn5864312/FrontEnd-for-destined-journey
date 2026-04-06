@@ -155,12 +155,6 @@
           "default": {},
           "type": "object",
           "properties": {
-            "当前主修": {
-              "type": "string"
-            },
-            "总熟练度": {
-              "type": "number"
-            },
             "分类": {
               "default": {},
               "type": "object",

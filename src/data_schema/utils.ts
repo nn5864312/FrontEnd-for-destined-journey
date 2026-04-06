@@ -407,22 +407,16 @@ export const LifeSkillEntrySchema = z
 
 export const LifeSkillsSchema = z
   .object({
-    当前主修: z.string().prefault(''),
-    总熟练度: z.coerce.number().prefault(0),
     分类: z
       .object(_.mapValues(DefaultLifeSkillCategories, () => LifeSkillEntrySchema.prefault({})))
       .prefault({}),
   })
   .prefault({})
-  .transform(data => {
-    const normalizedCategories = _.mapValues(data.分类, item => normalizeLifeSkillEntry(item));
-
-    return {
-      当前主修: _.trim(data.当前主修 || ''),
-      分类: normalizedCategories,
-      总熟练度: Math.max(0, _.sumBy(_.values(normalizedCategories), item => item.熟练度 ?? 0)),
-    };
-  });
+  .transform(data => ({
+    分类: _.mapValues(DefaultLifeSkillCategories, (_, key) =>
+      normalizeLifeSkillEntry(data.分类?.[key as keyof typeof DefaultLifeSkillCategories] ?? {}),
+    ),
+  }));
 
 /**
  * 登神长阶 schema
