@@ -36,11 +36,6 @@ type LifeSkillsTree = {
   分类: Record<string, LifeSkillEntry>;
 };
 
-const VARIABLE_OPTION = {
-  type: 'message' as const,
-  message_id: -1,
-};
-
 const DEFAULT_LIFE_SKILL_ENTRY = (): LifeSkillEntry => ({
   等级: '初级 1',
   当前经验: 0,
@@ -63,10 +58,7 @@ const LIFE_SKILL_NAMES = [
 ] as const;
 
 const createDefaultLifeSkillsTree = (): LifeSkillsTree => ({
-  分类: Object.fromEntries(LIFE_SKILL_NAMES.map(name => [name, DEFAULT_LIFE_SKILL_ENTRY()])) as Record<
-    string,
-    LifeSkillEntry
-  >,
+  分类: Object.fromEntries(LIFE_SKILL_NAMES.map(name => [name, DEFAULT_LIFE_SKILL_ENTRY()])) as Record<string, LifeSkillEntry>,
 });
 
 const ensureLifeSkillTree = (rawData: unknown): { nextRawData: Record<string, unknown>; changed: boolean } => {
@@ -75,15 +67,19 @@ const ensureLifeSkillTree = (rawData: unknown): { nextRawData: Record<string, un
 
   const currentLifeSkills = _.get(nextRawData, '主角.生活职业');
   const defaultTree = createDefaultLifeSkillsTree();
+
+  // 用户当前已不再使用“当前主修 / 总熟练度”，这里仅保证“分类 -> 11 项 -> 4 字段”存在。
   const normalizedLifeSkills = _.merge({}, defaultTree, _.isPlainObject(currentLifeSkills) ? currentLifeSkills : {});
 
-  // 用户已不再使用旧字段，迁移时强制清掉，保证结构稳定。
+  // 强制去掉旧结构残留字段，避免旧树与新树混用。
   if (_.isPlainObject(normalizedLifeSkills)) {
     delete (normalizedLifeSkills as Record<string, unknown>).当前主修;
     delete (normalizedLifeSkills as Record<string, unknown>).总熟练度;
   }
 
-  const changed = !_.isEqual(currentLifeSkills, normalizedLifeSkills);
+  const existedBefore = _.has(nextRawData, '主角.生活职业');
+  const changed = !existedBefore || !_.isEqual(currentLifeSkills, normalizedLifeSkills);
+
   if (changed) {
     _.set(nextRawData, '主角.生活职业', normalizedLifeSkills);
   }
@@ -91,51 +87,19 @@ const ensureLifeSkillTree = (rawData: unknown): { nextRawData: Record<string, un
   return { nextRawData, changed };
 };
 
-const normalizeStatData = (
-  rawData: unknown,
-):
-  | {
-      success: true;
-      data: StatData;
-      changed: boolean;
-    }
-  | {
-      success: false;
-      error: unknown;
-    } => {
-  const { nextRawData, changed: treeChanged } = ensureLifeSkillTree(rawData);
-  const result = Schema.safeParse(nextRawData);
+const persistStatData = async (messageId: number, statData: unknown): Promise<void> => {
+  await waitGlobalInitialized('Mvu');
+  const mvuData = Mvu.getMvuData({
+    type: 'message',
+    message_id: messageId,
+  });
 
-  if (!result.success) {
-    return {
-      success: false,
-      error: result.error,
-    };
-  }
+  _.set(mvuData, 'stat_data', statData);
 
-  return {
-    success: true,
-    data: result.data,
-    changed: treeChanged || !_.isEqual(nextRawData, result.data),
-  };
-};
-
-const readRawStatData = (): unknown => _.get(getVariables(VARIABLE_OPTION), 'stat_data', {});
-
-const writeStatData = async (statData: unknown): Promise<void> => {
-  await Promise.resolve(
-    updateVariablesWith(variables => {
-      _.set(variables, 'stat_data', statData);
-    }, VARIABLE_OPTION),
-  );
-};
-
-const normalizePath = (path: string): string => {
-  if (!path) {
-    return path;
-  }
-
-  return path.startsWith('stat_data.') ? path.slice('stat_data.'.length) : path;
+  await Mvu.replaceMvuData(mvuData, {
+    type: 'message',
+    message_id: messageId,
+  });
 };
 
 export const useMvuDataStore = create<MvuDataStore>()(
@@ -150,12 +114,6 @@ export const useMvuDataStore = create<MvuDataStore>()(
 
     /**
      * 刷新数据
-     *
-     * 按 util/vue_mvu.ts 的思路：
-     * - 固定读取 message:-1 的消息变量链
-     * - 先对底层原始 stat_data 做硬迁移（补全主角.生活职业树）
-     * - 再交给 Schema 规范化
-     * - 若规范化结果与原始数据不同，则直接写回消息变量
      */
     refresh: () => {
       set(state => {
@@ -164,27 +122,47 @@ export const useMvuDataStore = create<MvuDataStore>()(
 
       void (async () => {
         try {
-          await waitGlobalInitialized('Mvu');
+          const messageId = getCurrentMessageId();
 
-          const rawData = readRawStatData();
-          const normalized = normalizeStatData(rawData);
+          // 获取当前消息楼层的变量数据
+          const variables = getVariables({
+            type: 'message',
+            message_id: messageId,
+          });
 
-          if (!normalized.success) {
-            console.warn('[StatusBar] 数据校验失败:', normalized.error);
+          // 提取原始 stat_data
+          const rawData = _.get(variables, 'stat_data', {});
+
+          // 方案 A：先对原始树做一次“硬迁移”，确保主角.生活职业完整存在，
+          // 不再只依赖 schema.prefault 在显示层临时补默认值。
+          const { nextRawData, changed: treeChanged } = ensureLifeSkillTree(rawData);
+
+          if (treeChanged) {
+            await persistStatData(messageId, nextRawData);
+            console.log('[StatusBar] 已强制补全主角.生活职业树并写回原始 stat_data');
+          }
+
+          // 对“补树后”的原始数据再做 schema 规范化
+          const result = Schema.safeParse(nextRawData);
+
+          if (!result.success) {
+            console.warn('[StatusBar] 数据校验失败:', result.error);
             set(state => {
-              state.error = '数据格式错误';
+              state.error = `数据格式错误：${result.error.message || '未知错误'}`;
               state.loading = false;
             });
+
             return;
           }
 
-          if (normalized.changed) {
-            await writeStatData(normalized.data);
-            console.log('[StatusBar] 已按 vue_mvu 风格同步并写回 stat_data');
+          // 若 schema 还补出了其它缺失字段，则同步等待写回，避免仅显示层有新树。
+          if (!_.isEqual(nextRawData, result.data)) {
+            await persistStatData(messageId, result.data);
+            console.log('[StatusBar] 已将 schema 规范化结果写回原始 stat_data');
           }
 
           set(state => {
-            state.data = normalized.data;
+            state.data = result.data;
             state.loading = false;
             state.error = null;
             state.lastRefreshTime = new Date();
@@ -207,20 +185,23 @@ export const useMvuDataStore = create<MvuDataStore>()(
     updateField: async (path: string, value: unknown): Promise<boolean> => {
       try {
         await waitGlobalInitialized('Mvu');
+        const mvuData = Mvu.getMvuData({
+          type: 'message',
+          message_id: getCurrentMessageId(),
+        });
 
-        const normalizedPath = normalizePath(path);
-        const rawData = readRawStatData();
-        const { nextRawData } = ensureLifeSkillTree(rawData);
-        _.set(nextRawData, normalizedPath, value);
+        // 更新值
+        _.set(mvuData, `stat_data.${path}`, value);
 
-        const normalized = normalizeStatData(nextRawData);
-        if (!normalized.success) {
-          console.warn('[StatusBar] 更新字段时数据校验失败:', normalized.error);
-          return false;
-        }
+        // 写回
+        await Mvu.replaceMvuData(mvuData, {
+          type: 'message',
+          message_id: getCurrentMessageId(),
+        });
 
-        await writeStatData(normalized.data);
+        // 刷新本地状态
         get().refresh();
+
         return true;
       } catch (e) {
         console.error('[StatusBar] 更新数据失败:', e);
@@ -234,20 +215,23 @@ export const useMvuDataStore = create<MvuDataStore>()(
     deleteField: async (path: string): Promise<boolean> => {
       try {
         await waitGlobalInitialized('Mvu');
+        const mvuData = Mvu.getMvuData({
+          type: 'message',
+          message_id: getCurrentMessageId(),
+        });
 
-        const normalizedPath = normalizePath(path);
-        const rawData = readRawStatData();
-        const { nextRawData } = ensureLifeSkillTree(rawData);
-        _.unset(nextRawData, normalizedPath);
+        // 删除值
+        _.unset(mvuData, `stat_data.${path}`);
 
-        const normalized = normalizeStatData(nextRawData);
-        if (!normalized.success) {
-          console.warn('[StatusBar] 删除字段时数据校验失败:', normalized.error);
-          return false;
-        }
+        // 写回
+        await Mvu.replaceMvuData(mvuData, {
+          type: 'message',
+          message_id: getCurrentMessageId(),
+        });
 
-        await writeStatData(normalized.data);
+        // 刷新本地状态
         get().refresh();
+
         return true;
       } catch (e) {
         console.error('[StatusBar] 删除数据失败:', e);
