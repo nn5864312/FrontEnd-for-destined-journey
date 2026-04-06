@@ -543,6 +543,9 @@ const StatusTabContent: FC<WithMvuDataProps> = ({ data }) => {
         onClose={() => setActiveDetail(null)}
       >
         <div className={styles.lifeSkillsSheet}>
+          <pre style={{ whiteSpace: 'pre-wrap', color: '#fff', fontSize: 12, marginBottom: 12 }}>
+            {JSON.stringify(_.get(player, '生活职业.分类.钓鱼', null), null, 2)}
+          </pre>
           <div className={styles.lifeSkillGrid}>{lifeSkillEntries.map(renderLifeSkillCard)}</div>
         </div>
       </DetailSheet>
