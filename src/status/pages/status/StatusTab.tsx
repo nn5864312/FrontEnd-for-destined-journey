@@ -72,7 +72,7 @@ const LifeSkillOrder = [
 
 type LifeSkillKey = (typeof LifeSkillOrder)[number];
 
-const DEFAULT_LIFE_SKILL_LEVEL = '初学者 1';
+const DEFAULT_LIFE_SKILL_LEVEL = '初级 1';
 
 const normalizeLifeSkillLevel = (value: unknown) => {
   const normalized = _.trim(_.toString(value ?? ''));

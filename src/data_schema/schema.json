@@ -622,7 +622,7 @@
       "type": "object",
       "properties": {
         "等级": {
-          "default": "初学者 1",
+          "default": "初级 1",
           "type": "string"
         },
         "当前经验": {

@@ -122,20 +122,232 @@ const DefaultLifeSkillCategories = {
   物物交换: {},
 } as const;
 
+const LifeSkillRankMaxMap = {
+  初级: 10,
+  见习: 10,
+  熟练: 10,
+  专家: 10,
+  匠人: 10,
+  名匠: 30,
+  道人: 50,
+} as const;
+
+const LifeSkillRankAliases: Record<string, keyof typeof LifeSkillRankMaxMap> = {
+  初级: '初级',
+  初級: '初级',
+  初学者: '初级',
+  初學者: '初级',
+  Beginner: '初级',
+  beginner: '初级',
+
+  见习: '见习',
+  見習: '见习',
+  Apprentice: '见习',
+  apprentice: '见习',
+
+  熟练: '熟练',
+  熟練: '熟练',
+  Skilled: '熟练',
+  skilled: '熟练',
+
+  专家: '专家',
+  專家: '专家',
+  Professional: '专家',
+  professional: '专家',
+
+  匠人: '匠人',
+  Artisan: '匠人',
+  artisan: '匠人',
+
+  名匠: '名匠',
+  Master: '名匠',
+  master: '名匠',
+
+  道人: '道人',
+  Guru: '道人',
+  guru: '道人',
+};
+
+const LifeSkillLevelExpTable = {
+  '初级 1': 100,
+  '初级 2': 400,
+  '初级 3': 600,
+  '初级 4': 1200,
+  '初级 5': 1900,
+  '初级 6': 2900,
+  '初级 7': 4000,
+  '初级 8': 5400,
+  '初级 9': 6900,
+  '初级 10': 8600,
+  '见习 1': 10600,
+  '见习 2': 13100,
+  '见习 3': 15900,
+  '见习 4': 18800,
+  '见习 5': 22000,
+  '见习 6': 25400,
+  '见习 7': 29100,
+  '见习 8': 33000,
+  '见习 9': 37100,
+  '见习 10': 41500,
+  '熟练 1': 46100,
+  '熟练 2': 52300,
+  '熟练 3': 58800,
+  '熟练 4': 65600,
+  '熟练 5': 72700,
+  '熟练 6': 80100,
+  '熟练 7': 87800,
+  '熟练 8': 95800,
+  '熟练 9': 104100,
+  '熟练 10': 117400,
+  '专家 1': 131200,
+  '专家 2': 150200,
+  '专家 3': 174600,
+  '专家 4': 204600,
+  '专家 5': 245100,
+  '专家 6': 296500,
+  '专家 7': 363900,
+  '专家 8': 452600,
+  '专家 9': 568100,
+  '专家 10': 720800,
+  '匠人 1': 873600,
+  '匠人 2': 1074400,
+  '匠人 3': 1339100,
+  '匠人 4': 1641000,
+  '匠人 5': 1990900,
+  '匠人 6': 2452600,
+  '匠人 7': 3015300,
+  '匠人 8': 3663100,
+  '匠人 9': 4470600,
+  '匠人 10': 5490800,
+  '名匠 1': 6511100,
+  '名匠 2': 7536500,
+  '名匠 3': 8567100,
+  '名匠 4': 9603000,
+  '名匠 5': 10644300,
+  '名匠 6': 11691100,
+  '名匠 7': 12743500,
+  '名匠 8': 13801600,
+  '名匠 9': 14865500,
+  '名匠 10': 15935300,
+  '名匠 11': 17011100,
+  '名匠 12': 18093000,
+  '名匠 13': 19181100,
+  '名匠 14': 20275500,
+  '名匠 15': 21376300,
+  '名匠 16': 22483600,
+  '名匠 17': 23597500,
+  '名匠 18': 24718100,
+  '名匠 19': 25845500,
+  '名匠 20': 26979800,
+  '名匠 21': 28121100,
+  '名匠 22': 29269500,
+  '名匠 23': 30425100,
+  '名匠 24': 31588000,
+  '名匠 25': 32758300,
+  '名匠 26': 33936100,
+  '名匠 27': 35121500,
+  '名匠 28': 36314600,
+  '名匠 29': 37515500,
+  '名匠 30': 38724300,
+  '道人 1': 39941100,
+  '道人 2': 41166000,
+  '道人 3': 42399100,
+  '道人 4': 43640500,
+  '道人 5': 44890300,
+  '道人 6': 46148600,
+  '道人 7': 47415500,
+  '道人 8': 48691100,
+  '道人 9': 49975500,
+  '道人 10': 51268800,
+  '道人 11': 52571100,
+  '道人 12': 53882500,
+  '道人 13': 55203100,
+  '道人 14': 56533000,
+  '道人 15': 57872300,
+  '道人 16': 59221100,
+  '道人 17': 60579500,
+  '道人 18': 61947600,
+  '道人 19': 63325500,
+  '道人 20': 64713300,
+  '道人 21': 66101100,
+  '道人 22': 70000000,
+  '道人 23': 71100000,
+  '道人 24': 72300000,
+  '道人 25': 73600000,
+  '道人 26': 75000000,
+  '道人 27': 76500000,
+  '道人 28': 78100000,
+  '道人 29': 79800000,
+  '道人 30': 81600000,
+  '道人 31': 83500000,
+  '道人 32': 85500000,
+  '道人 33': 87600000,
+  '道人 34': 89800000,
+  '道人 35': 92100000,
+  '道人 36': 94000000,
+  '道人 37': 95500000,
+  '道人 38': 96700000,
+  '道人 39': 97600000,
+  '道人 40': 98200000,
+  '道人 41': 98600000,
+  '道人 42': 98900000,
+  '道人 43': 99100000,
+  '道人 44': 99250000,
+  '道人 45': 99360000,
+  '道人 46': 99450000,
+  '道人 47': 99520000,
+  '道人 48': 99580000,
+  '道人 49': 99640000,
+  '道人 50': 99700000,
+} as const;
+
+const DEFAULT_LIFE_SKILL_LEVEL = '初级 1';
+const DEFAULT_LIFE_SKILL_EXP = LifeSkillLevelExpTable[DEFAULT_LIFE_SKILL_LEVEL];
+
+const normalizeLifeSkillLevel = (value: unknown) => {
+  const normalized = _.trim(_.toString(value ?? ''));
+  if (!normalized) {
+    return DEFAULT_LIFE_SKILL_LEVEL;
+  }
+
+  const match = normalized.match(/^([^\d]+)\s*(\d{1,2})$/);
+  if (!match) {
+    return DEFAULT_LIFE_SKILL_LEVEL;
+  }
+
+  const rankKey = _.trim(match[1]);
+  const levelNum = Number(match[2]);
+  const canonicalRank = LifeSkillRankAliases[rankKey];
+
+  if (!canonicalRank) {
+    return DEFAULT_LIFE_SKILL_LEVEL;
+  }
+
+  const safeLevel = _.clamp(Math.round(levelNum), 1, LifeSkillRankMaxMap[canonicalRank]);
+  return `${canonicalRank} ${safeLevel}` as keyof typeof LifeSkillLevelExpTable;
+};
+
+const getLifeSkillExpByLevel = (level: string) =>
+  LifeSkillLevelExpTable[level as keyof typeof LifeSkillLevelExpTable] ?? DEFAULT_LIFE_SKILL_EXP;
+
 export const LifeSkillEntrySchema = z
   .object({
-    等级: z.string().prefault('初学者 1'),
+    等级: z.string().prefault(DEFAULT_LIFE_SKILL_LEVEL),
     当前经验: z.coerce.number().prefault(0),
-    升级所需经验: z.coerce.number().prefault(100),
+    升级所需经验: z.coerce.number().prefault(DEFAULT_LIFE_SKILL_EXP),
     熟练度: z.coerce.number().prefault(0),
   })
   .prefault({})
-  .transform(data => ({
-    等级: _.trim(data.等级 || '') || '初学者 1',
-    当前经验: Math.max(0, Math.round(data.当前经验)),
-    升级所需经验: Math.max(1, Math.round(data.升级所需经验)),
-    熟练度: Math.max(0, Math.round(data.熟练度)),
-  }));
+  .transform(data => {
+    const normalizedLevel = normalizeLifeSkillLevel(data.等级);
+
+    return {
+      等级: normalizedLevel,
+      当前经验: Math.max(0, Math.round(data.当前经验)),
+      升级所需经验: getLifeSkillExpByLevel(normalizedLevel),
+      熟练度: Math.max(0, Math.round(data.熟练度)),
+    };
+  });
 
 export const LifeSkillsSchema = z
   .object({
@@ -148,7 +360,14 @@ export const LifeSkillsSchema = z
   .prefault({})
   .transform(data => ({
     当前主修: _.trim(data.当前主修 || ''),
-    分类: data.分类,
+    分类: _.mapValues(data.分类, item => {
+      const normalizedLevel = normalizeLifeSkillLevel(item.等级);
+      return {
+        ...item,
+        等级: normalizedLevel,
+        升级所需经验: getLifeSkillExpByLevel(normalizedLevel),
+      };
+    }),
     总熟练度: Math.max(0, _.sumBy(_.values(data.分类), item => item.熟练度 ?? 0)),
   }));
 
